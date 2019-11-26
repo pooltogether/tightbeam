@@ -1,0 +1,40 @@
+{
+  "name": "tightbeam",
+  "version": "0.1.0",
+  "description": "Ethers.js bindings for Apollo Client",
+  "main": "dist/bundle.js",
+  "repository": "https://github.com/pooltogether/tightbeam",
+  "author": "Brendan Asselstine",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "dist": "rollup -c rollup.config.js",
+    "watch": "rollup -w -c rollup.config.js",
+    "coverage": "jest --coverage --coverageReporters html",
+    "test-watch": "jest --watchAll",
+    "docs": "typedoc src",
+    "prepublishOnly": "yarn dist"
+  },
+  "dependencies": {
+    "debug": "^4.1.1"
+  },
+  "peerDependencies": {
+    "apollo-client": "^2.6.4",
+    "ethers": "^4.0.39"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "apollo-cache-inmemory": "^1.6.3",
+    "apollo-client": "^2.6.4",
+    "ethers": "^4.0.39",
+    "graphql": "^14.5.8",
+    "graphql-tag": "^2.10.1",
+    "jest": "^24.9.0",
+    "rollup": "^1.27.4",
+    "rollup-plugin-typescript": "^1.0.1",
+    "ts-jest": "^24.2.0",
+    "tslib": "^1.10.0",
+    "typedoc": "^0.15.3",
+    "typescript": "^3.7.2"
+  }
+}

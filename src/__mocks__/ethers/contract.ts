@@ -1,0 +1,1 @@
+export const Contract = jest.fn()

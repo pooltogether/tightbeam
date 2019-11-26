@@ -1,0 +1,14 @@
+{
+  "mode": "file",
+  "out": "docs",
+  "exclude" : [
+    "node_modules",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ],
+  "excludeNotExported": "true",
+  "excludeExternals": "true",
+  "ignoreCompilerErrors": "true",
+  "experimentalDecorators": "true",
+  "target": "ES6"
+}
