@@ -1,20 +1,71 @@
 import { ContractCache } from '../ContractCache'
-import { AbiMapping } from '../AbiMapping'
-import { abi } from './abi'
-import { abi2 } from './abi2'
+import { AbiMapping } from '../abis/AbiMapping'
 import { Contract } from 'ethers/contract'
 import { Interface } from 'ethers/utils/interface'
 
 describe('ContractCache', () => {
 
   let abiMapping
-  let provider, providerCb
+  let providerCb
   let cache
 
-  beforeEach(async () => {
-    // jest.mock('ethers/utils/Interface')
-    // jest.mock('ethers/Contract')
+  let abi = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    }
+  ]
 
+  const abi2 = [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+  
+
+  beforeEach(async () => {
     abiMapping = new AbiMapping()
     abiMapping.addContract('Foo', 1234, '0xabcd', abi)
 

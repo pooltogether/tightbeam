@@ -1,4 +1,4 @@
-import { allTransactionsQuery, transactionFragment } from '../../../gql/index'
+import { allTransactionsQuery, transactionFragment } from '../../../queries'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ethers } from 'ethers'
 import { bigNumberify } from 'ethers/utils'

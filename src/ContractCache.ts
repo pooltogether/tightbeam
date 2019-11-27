@@ -1,5 +1,5 @@
 import { Provider } from 'ethers/providers'
-import { AbiMapping } from './AbiMapping'
+import { AbiMapping } from './abis/AbiMapping'
 import { Interface } from 'ethers/utils/interface'
 import { Contract } from 'ethers/contract'
 

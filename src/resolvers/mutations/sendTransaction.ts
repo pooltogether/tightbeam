@@ -1,9 +1,9 @@
-import { allTransactionsQuery, transactionFragment } from '../../gql/index'
-import { gasCalculator } from '../../utils/gasCalculator'
+import { allTransactionsQuery, transactionFragment } from '../../queries'
+import { gasCalculator } from '../../utils'
 import { ContractCache } from '../../ContractCache'
 import { bigNumberify } from 'ethers/utils'
 import { JsonRpcProvider } from 'ethers/providers'
-import { watchTransaction } from '../../services/watchTransaction'
+import { watchTransaction } from '../../services'
 
 const debug = require('debug')('tightbeam:sendTransaction')
 

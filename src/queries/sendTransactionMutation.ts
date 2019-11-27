@@ -2,8 +2,9 @@ import gql from 'graphql-tag'
 
 export const sendTransactionMutation = gql`
   mutation sendTransactionMutation(
-    $contractName: String!,
-    $contractAddress: String,
+    $name: String!,
+    $abi: String!,
+    $address: String,
     $method: String!,
     $args: Object!,
     $gasLimit: String,
@@ -12,8 +13,9 @@ export const sendTransactionMutation = gql`
     $minimumGas: String
   ) {
     sendTransaction(
-      contractName: $contractName,
-      contractAddress: $contractAddress,
+      name: $name,
+      abi: $abi,
+      address: $address,
       method: $method,
       args: $args,
       gasLimit: $gasLimit,

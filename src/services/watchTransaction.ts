@@ -1,5 +1,5 @@
-import { transactionFragment } from '../gql/index'
-import { Transaction } from '../resolvers/mutation/sendTransaction'
+import { transactionFragment } from '../queries'
+import { Transaction } from '../resolvers/mutations/sendTransaction'
 import { BaseProvider } from 'ethers/providers'
 
 const debug = require('debug')('tightbeam:watchTransaction')
