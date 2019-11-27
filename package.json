@@ -1,5 +1,5 @@
 {
-  "name": "tightbeam",
+  "name": "@pooltogether/tightbeam",
   "version": "0.1.0",
   "description": "Ethers.js bindings for Apollo Client",
   "main": "dist/bundle.js",
