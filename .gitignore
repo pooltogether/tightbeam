@@ -2,3 +2,13 @@ dist
 node_modules
 coverage
 docs
+
+# Below are the dist files.
+_virtual
+abis
+queries
+resolvers
+services
+utils
+ContractCache.js
+index.js
