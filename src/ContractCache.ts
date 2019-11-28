@@ -5,30 +5,32 @@ import { ProviderSource } from './types/ProviderSource'
 
 const debug = require('debug')('tightbeam:ContractCache')
 
-class ContractCacheOptions {
-  abiMapping: AbiMapping
-  providerSource: ProviderSource
-}
-
+/**
+ * Look up contracts or ABIs by name or address.  Values are cached.  Also offers a contract resolver to easily retrieve an [[ethers.Contract]] object.
+ */
 export class ContractCache {
-  providerSource: ProviderSource
-  abiMapping: AbiMapping
   contractCache: Map<number, Map<string, Contract>>
   ifaceCache: Map<number, Map<string, Interface>>
 
-  constructor (options: ContractCacheOptions) {
-    if (!options.abiMapping) {
+  constructor (
+    public readonly abiMapping: AbiMapping,
+    public readonly providerSource: ProviderSource
+  ) {
+    if (!abiMapping) {
       throw new Error('abiMapping must be defined')
     }
-    if (!options.providerSource) {
+    if (!providerSource) {
       throw new Error('provider source must be defined')
     }
-    this.providerSource = options.providerSource
-    this.abiMapping = options.abiMapping
     this.contractCache = new Map<number, Map<string, Contract>>()
     this.ifaceCache = new Map<number, Map<string, Interface>>()
   }
 
+  /**
+   * Lookup a contract by name.  
+   * 
+   * @param contractName The contract name used to register the contract in the [[AbiMapping]]
+   */
   async getContractByName (contractName: string): Promise<Contract> {
     if (!contractName) throw new Error('Contract name must be defined')
 
@@ -45,6 +47,11 @@ export class ContractCache {
     return await this.getContractByAddress(address)
   }
 
+  /**
+   * Lookup a contract by address
+   * 
+   * @param address The address that the contract was added under in the [[AbiMapping]]
+   */
   async getContractByAddress (address: string): Promise<Contract> {
     if (!address) throw new Error('Address must be defined')
 
@@ -68,6 +75,11 @@ export class ContractCache {
     return contract
   }
 
+  /**
+   * Lookup an [[ethers.utils.Interface]] by abi name
+   * 
+   * @param abiName The name of the ABI added in the [[AbiMapping]]
+   */
   async getAbiInterfaceByName (abiName): Promise<Interface> {
     let iface = this.ifaceCache[abiName]
     if (!iface) {

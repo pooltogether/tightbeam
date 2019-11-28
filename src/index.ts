@@ -17,3 +17,4 @@ export {
 }
 
 export * from './ContractCache'
+export * from './TightbeamConfig'
