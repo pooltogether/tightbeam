@@ -1,5 +1,5 @@
 import { AbiDefinition } from '../AbiDefinition'
-import { abi } from './abi'
+import { abi } from '../../__mocks__/abi'
 
 describe('AbiDefinition', () => {
   describe('constructor()', () => {

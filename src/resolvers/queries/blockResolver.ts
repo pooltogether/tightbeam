@@ -1,5 +1,5 @@
 import { ProviderSource } from "../../types/ProviderSource"
-import { Block } from "./Block"
+import { Block } from "../../types/Block"
 
 const debug = require('debug')('tightbeam:blockResolver')
 
@@ -14,9 +14,10 @@ export async function blockResolver (providerSource: ProviderSource, opts, args,
   const provider = await providerSource()
   debug('blockNumber: ', blockNumber)
   const block = await provider.getBlock(blockNumber)
-  const result = {
+  let result: Block
+  result = {
     __typename: 'Block',
-    id: blockNumber,
+    id: block.number,
     ...block
   }
   debug(`block(${blockNumber}): `, result)

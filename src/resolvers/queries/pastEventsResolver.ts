@@ -11,7 +11,7 @@ export async function pastEventsResolver(
   contractCache: ContractCache,
   providerSource: ProviderSource,
   config: TightbeamConfig,
-  opts, eventFilter: EventFilter, context, info
+  opts, eventFilter: EventFilter, context?, info?
 ): Promise<Array<LogEvent>> {
   
   debug(eventFilter)
@@ -23,14 +23,12 @@ export async function pastEventsResolver(
   })
 
   const filter = buildFilter(
-    config,
-    contract,
-    eventFilter.event,
-    eventFilter.params,
-    eventFilter.topics,
-    eventFilter.extraTopics,
-    eventFilter.fromBlock,
-    eventFilter.toBlock
+    contract.address,
+    contract.interface,
+    {
+      ...eventFilter,
+      fromBlock: eventFilter.fromBlock || config.defaultFromBlock
+    }
   )
 
   const provider = await providerSource()

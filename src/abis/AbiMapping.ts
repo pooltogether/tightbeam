@@ -1,5 +1,7 @@
 import { AbiDefinition } from './AbiDefinition'
 
+const debug = require('debug')('tightbeam:AbiMapping')
+
 export class AbiMapping {
   abiMapping: Map<string, AbiDefinition>
   nameToAddressMapping: Map<string, Map<Number, string>>
@@ -14,11 +16,10 @@ export class AbiMapping {
   addAbi(name: string, abi: Array<object>): void {
     if (!name) throw `ABI cannot be mapped to a null name`
     if (!abi) throw `ABI cannot be null`
-    this.abiMapping[name] = new AbiDefinition(abi)
-  }
+    
+    debug(`addAbi(${name}, ${JSON.stringify(abi)}`)
 
-  getAbiDefinition(name: string): AbiDefinition {
-    return this.abiMapping[name]
+    this.abiMapping[name] = new AbiDefinition(abi)
   }
 
   addContract(name: string, networkId: Number, address: string, abi: Array<object>) {
@@ -33,8 +34,22 @@ export class AbiMapping {
     if (!this.addressToAbiMapping[address]) {
       this.addressToAbiMapping[address] = {}
     }
+
+    debug(`addContract(${name}, ${networkId}, ${address}, ${JSON.stringify(abi)}`)
+
     this.nameToAddressMapping[name][networkId] = address
     this.addressToAbiMapping[address][networkId] = new AbiDefinition(abi)
+  }
+
+  addTruffleArtifact (truffleJsonArtifact: any) {
+    Object.keys(truffleJsonArtifact.networks).forEach(networkId => {
+      debug(`addTruffleArtifact addContract(${truffleJsonArtifact.contractName}, ${networkId}, ${truffleJsonArtifact.networks[networkId].address}, ${JSON.stringify(truffleJsonArtifact.abi)}`)
+      this.addContract(truffleJsonArtifact.contractName, parseInt(networkId), truffleJsonArtifact.networks[networkId].address, truffleJsonArtifact.abi)
+    })
+  }
+
+  getAbiDefinition(name: string): AbiDefinition {
+    return this.abiMapping[name]
   }
 
   getContractAbiDefinitionByName(name: string, networkId: Number): AbiDefinition {

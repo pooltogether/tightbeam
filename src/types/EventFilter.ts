@@ -4,7 +4,7 @@ export interface EventFilter {
   abi?: string,
   address?: string,
   name?: string,
-  event: string,
+  event?: string,
   params?: Array<string>,
   fromBlock?: string | number,
   toBlock?: string | number,

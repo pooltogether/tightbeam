@@ -1,4 +1,5 @@
+export * from './accountResolver'
+export * from './blockResolver'
 export * from './callResolver'
-export * from './callResolverFactory'
+export * from './networkResolver'
 export * from './pastEventsResolver'
-export * from './pastEventsResolverFactory'

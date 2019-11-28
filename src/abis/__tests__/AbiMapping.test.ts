@@ -1,6 +1,6 @@
 import { AbiMapping } from '../AbiMapping'
 import { AbiDefinition } from '../AbiDefinition'
-import { abi } from './abi'
+import { abi } from '../../__mocks__/abi'
 
 describe('AbiMapping', () => {
   const abiDef = new AbiDefinition(abi)
@@ -120,6 +120,25 @@ describe('AbiMapping', () => {
     it('should work', () => {
       mapping.addContract('Vouching', 1234, '0xabcde', abi)
       expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0xabcde')
+    })
+  })
+
+  describe('addTruffleArtifact()', () => {
+    it('should add the artifact', () => {
+      mapping.addTruffleArtifact({
+        contractName: "Foo",
+        abi,
+        networks: {
+          [1234]: {
+            events: {},
+            links: {},
+            address: "0xdfC2FCFDE180eEd58B180Cbc50f4148f48581180",
+            transactionHash: ""
+          }
+        }
+      })
+
+      expect(mapping.getContractAddress('Foo', 1234)).toEqual('0xdfC2FCFDE180eEd58B180Cbc50f4148f48581180')
     })
   })
 })

@@ -24,14 +24,12 @@ export async function eventSubscriber(
   })
 
   const filter = buildFilter(
-    config,
-    contract,
-    eventFilter.event,
-    eventFilter.params,
-    eventFilter.topics,
-    eventFilter.extraTopics,
-    eventFilter.fromBlock,
-    eventFilter.toBlock
+    contract.address,
+    contract.interface,
+    {
+      ...eventFilter,
+      fromBlock: eventFilter.fromBlock || config.defaultFromBlock
+    }
   )
 
   const provider = await providerSource()

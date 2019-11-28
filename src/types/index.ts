@@ -1,3 +1,4 @@
+export * from './Block'
 export * from './EventFilter'
 export * from './EventTopics'
 export * from './LogEvent'

@@ -1,31 +1,30 @@
-import { Contract } from 'ethers/contract'
-import { EventTopics } from '../types/EventTopics'
 import { encodeEventTopics } from '../utils/encodeEventTopics'
-import { TightbeamConfig } from '../TightbeamConfig'
 import { Filter } from 'ethers/providers'
+import { Interface } from 'ethers/utils'
+import { EventFilter } from '../types'
 
 const debug = require('debug')('tightbeam:buildFilter')
 
-export function buildFilter(
-  config: TightbeamConfig,
-  contract: Contract,
-  eventName: string,
-  params: Array<any>,
-  topics: EventTopics,
-  extraTopics: EventTopics,
-  fromBlock: string | number,
-  toBlock: string | number
-): Filter {
-  params = params || []
+export function buildFilter(address: string, ethersInterface: Interface, filterParams: EventFilter): Filter {
+  const {
+    params,
+    topics,
+    event,
+    extraTopics,
+    fromBlock,
+    toBlock
+  } = filterParams
 
   let actualTopics = []
   if (topics) {
     actualTopics = encodeEventTopics(topics)
-  } else if (eventName !== 'allEvents') {
-    let fxnFilter = contract.filters[eventName]
-    if (!fxnFilter) { throw new Error(`No event called ${eventName}`)}
-    actualTopics = fxnFilter(...params).topics
-    debug(`using topics for ${eventName}`, topics)
+  } else if (!event || event === 'allEvents') {
+    actualTopics = [null]    
+  } else {
+    let eventInterface = ethersInterface.events[event]
+    if (!eventInterface) { throw new Error(`No event called ${event}`)}
+    actualTopics = eventInterface.encodeTopics(params || [])
+    debug(`using topics for ${event}`, topics)
   }
 
   let encodedExtraTopics = []
@@ -34,8 +33,8 @@ export function buildFilter(
   }
 
   const filter = {
-    address: contract.address,
-    fromBlock: fromBlock || config.defaultFromBlock,
+    address,
+    fromBlock: fromBlock || 0,
     toBlock: toBlock || 'latest',
     topics: actualTopics.concat(encodedExtraTopics)
   }
