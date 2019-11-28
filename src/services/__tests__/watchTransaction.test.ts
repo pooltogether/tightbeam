@@ -1,6 +1,6 @@
 import { watchTransaction } from '../watchTransaction'
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import { Transaction } from '../../resolvers/mutations/sendTransaction'
+import { Transaction } from '../../types/Transaction'
 import { allTransactionsQuery, transactionFragment } from '../../queries'
 
 describe('watchTransaction()', () => { 

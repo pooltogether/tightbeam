@@ -2,36 +2,13 @@ import { allTransactionsQuery, transactionFragment } from '../../queries'
 import { gasCalculator } from '../../utils'
 import { ContractCache } from '../../ContractCache'
 import { bigNumberify } from 'ethers/utils'
-import { JsonRpcProvider } from 'ethers/providers'
 import { watchTransaction } from '../../services'
+import { Transaction, TransactionParams } from '../../types/Transaction'
+import { ProviderSource } from '../../types/ProviderSource'
 
 const debug = require('debug')('tightbeam:sendTransaction')
 
-export class TransactionParams {
-  public __typename = 'JSON'
-
-  constructor (
-    public values: Array<string>
-  ) {}
-}
-
-export class Transaction {
-  public __typename = 'Transaction'
-  public id: number
-  public fn: any = null
-  public name: string = null
-  public abi: string = null
-  public address: string = null
-  public completed: boolean = false
-  public sent: boolean = false
-  public hash: string = null
-  public error: string = null
-  public blockNumber: number = null
-  public params: TransactionParams = new TransactionParams([])
-  public value: string = null
-}
-
-export async function sendTransaction(contractCache: ContractCache, provider: JsonRpcProvider, txId: number, opts, args, context, info): Promise<Transaction> {
+export async function sendTransactionResolver(contractCache: ContractCache, providerSource: ProviderSource, txId: number, opts, args, context, info): Promise<Transaction> {
   const { cache } = context
   let {
     abi,
@@ -45,6 +22,7 @@ export async function sendTransaction(contractCache: ContractCache, provider: Js
     minimumGas
   } = args
   
+  const provider = await providerSource()
   const signer = provider.getSigner()
 
   let contract = await contractCache.resolveContract({abi, address, contractName: name })

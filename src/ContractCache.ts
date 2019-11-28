@@ -1,23 +1,17 @@
-import { Provider } from 'ethers/providers'
 import { AbiMapping } from './abis/AbiMapping'
 import { Interface } from 'ethers/utils/interface'
 import { Contract } from 'ethers/contract'
+import { ProviderSource } from './types/ProviderSource'
 
 const debug = require('debug')('tightbeam:ContractCache')
 
 class ContractCacheOptions {
   abiMapping: AbiMapping
-  provider: () => Promise<Provider>
-}
-
-class ResolutionResult {
-  ethersInterface: Interface
-  address: string
-  identifier: string
+  providerSource: ProviderSource
 }
 
 export class ContractCache {
-  provider: () => Promise<Provider>
+  providerSource: ProviderSource
   abiMapping: AbiMapping
   contractCache: Map<number, Map<string, Contract>>
   ifaceCache: Map<number, Map<string, Interface>>
@@ -26,10 +20,10 @@ export class ContractCache {
     if (!options.abiMapping) {
       throw new Error('abiMapping must be defined')
     }
-    if (!options.provider) {
-      throw new Error('provider must be defined')
+    if (!options.providerSource) {
+      throw new Error('provider source must be defined')
     }
-    this.provider = options.provider
+    this.providerSource = options.providerSource
     this.abiMapping = options.abiMapping
     this.contractCache = new Map<number, Map<string, Contract>>()
     this.ifaceCache = new Map<number, Map<string, Interface>>()
@@ -38,7 +32,7 @@ export class ContractCache {
   async getContractByName (contractName: string): Promise<Contract> {
     if (!contractName) throw new Error('Contract name must be defined')
 
-    const provider = await this.provider()
+    const provider = await this.providerSource()
     const network = await provider.getNetwork()
     const { chainId } = network
 
@@ -54,7 +48,7 @@ export class ContractCache {
   async getContractByAddress (address: string): Promise<Contract> {
     if (!address) throw new Error('Address must be defined')
 
-    const provider = await this.provider()
+    const provider = await this.providerSource()
     const network = await provider.getNetwork()
     const { chainId } = network
     
@@ -90,7 +84,7 @@ export class ContractCache {
 
   async resolveContract({ abi, address, contractName }): Promise<Contract> {
     let contract: Contract
-    const provider = await this.provider()
+    const provider = await this.providerSource()
     if (abi) {
       let ethersInterface = await this.getAbiInterfaceByName(abi)
       if (!address) {

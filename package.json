@@ -21,7 +21,8 @@
     "src": "src"
   },
   "dependencies": {
-    "debug": "^4.1.1"
+    "debug": "^4.1.1",
+    "zen-observable-ts": "^0.8.20"
   },
   "peerDependencies": {
     "apollo-client": "^2.6.4",
@@ -31,10 +32,12 @@
     "@types/jest": "^24.0.23",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",
+    "apollo-link-http": "^1.5.16",
     "ethers": "^4.0.39",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "jest": "^24.9.0",
+    "node-fetch": "^2.6.0",
     "rollup": "^1.27.4",
     "rollup-plugin-typescript": "^1.0.1",
     "ts-jest": "^24.2.0",

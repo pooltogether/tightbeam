@@ -1,2 +1,2 @@
-export * from './sendTransaction'
-export * from './sendTransactionFactory'
+export * from './sendTransactionResolver'
+export * from './sendTransactionResolverFactory'

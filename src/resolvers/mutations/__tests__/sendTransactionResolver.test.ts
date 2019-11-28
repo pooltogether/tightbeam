@@ -3,16 +3,16 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ethers } from 'ethers'
 import { bigNumberify } from 'ethers/utils'
 
-const { sendTransaction } = require('../sendTransaction')
+const { sendTransactionResolver } = require('../sendTransactionResolver')
 
 jest.mock('../../../services/watchTransaction')
 
 const { watchTransaction } = require('../../../services/watchTransaction')
 
-describe('sendTransaction', () => {
+describe('sendTransactionResolver', () => {
   let cache
 
-  let contractCache, contract, provider, signer
+  let contractCache, contract, provider, providerSource, signer
 
   let sendUncheckedTransactionPromise
 
@@ -67,6 +67,8 @@ describe('sendTransaction', () => {
     provider = {
       getSigner: jest.fn(() => signer)
     }
+
+    providerSource = () => Promise.resolve(provider)
   })
 
   afterEach(() => {
@@ -74,11 +76,11 @@ describe('sendTransaction', () => {
   })
 
   it('should complain when the fn does not exist', async () => {
-    await expect(sendTransaction(contractCache, provider, 1, {}, { name: 'Dai', fn: 'badFn', params: [1, "hello"]}, { cache }, {})).rejects.toEqual(new Error('Unknown function badFn for {"name":"Dai","address":"0x1234"}'))
+    await expect(sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'badFn', params: [1, "hello"]}, { cache }, {})).rejects.toEqual(new Error('Unknown function badFn for {"name":"Dai","address":"0x1234"}'))
   })
 
   it('should call a function when no value passed', async () => {
-    const transaction = await sendTransaction(contractCache, provider, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"]}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"]}, { cache }, {})
 
     expect(transaction).toMatchObject({
       __typename: 'Transaction',
@@ -114,7 +116,7 @@ describe('sendTransaction', () => {
   })
 
   it('should accept value param', async () => {
-    const transaction = await sendTransaction(contractCache, provider, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
     expect(transaction.value).toEqual('12')
     
     expect(signer.sendUncheckedTransaction).toHaveBeenCalledWith(expect.objectContaining({
@@ -127,7 +129,7 @@ describe('sendTransaction', () => {
   })
 
   it('should accept an abi', async () => {
-    const transaction = await sendTransaction(contractCache, provider, 1, {}, { abi: 'ERC20', address: '0xabcd', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { abi: 'ERC20', address: '0xabcd', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
     expect(transaction.abi).toEqual('ERC20')
     expect(transaction.name).toEqual(null)
   })
@@ -135,7 +137,7 @@ describe('sendTransaction', () => {
   it('should setup the tx as failed when an error occurs', async () => {
     sendUncheckedTransactionPromise = Promise.reject('FAILED')
 
-    const transaction = await sendTransaction(contractCache, provider, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
 
     expect(transaction.hash).toEqual(null)
     expect(transaction.error).toEqual('FAILED')
@@ -147,7 +149,7 @@ describe('sendTransaction', () => {
 
     // Now try with Error
     sendUncheckedTransactionPromise = Promise.reject(new Error('failmessage'))
-    const transaction2 = await sendTransaction(contractCache, provider, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction2 = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
     expect(transaction2.error).toEqual('failmessage')
   })
 })

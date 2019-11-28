@@ -1,5 +1,5 @@
 import { transactionFragment } from '../queries'
-import { Transaction } from '../resolvers/mutations/sendTransaction'
+import { Transaction } from '../types'
 import { BaseProvider } from 'ethers/providers'
 
 const debug = require('debug')('tightbeam:watchTransaction')

@@ -76,18 +76,18 @@ describe('ContractCache', () => {
     providerCb = jest.fn(() => Promise.resolve(provider))
 
     // @ts-ignore
-    cache = new ContractCache({ provider: providerCb, abiMapping })
+    cache = new ContractCache({ providerSource: providerCb, abiMapping })
   })
 
   describe('constructor', () => {
     it('should throw when no abiMapping passed', () => {
       // @ts-ignore
-      expect(() => new ContractCache({ provider: providerCb })).toThrow(/abiMapping must be defined/)
+      expect(() => new ContractCache({ providerSource: providerCb })).toThrow(/abiMapping must be defined/)
     })
 
     it('should throw when no provider passed', () => {
       // @ts-ignore
-      expect(() => new ContractCache({ abiMapping })).toThrow(/provider must be defined/)
+      expect(() => new ContractCache({ abiMapping })).toThrow(/provider source must be defined/)
     })
   })
 
