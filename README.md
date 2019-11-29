@@ -86,3 +86,78 @@ client = new ApolloClient({
 The `defaultCacheData()` function takes one optional argument that is your desired default state.  It will merge the two.
 
 The `resolvers()` function takes one optional argument of resolvers.  It will merge the Tightbeam resolvers into the passed object.
+
+Now you can talk to Ethereum!
+
+# Querying for Network, Account
+
+Let's query for the current network and account:
+
+```javascript
+
+const result = await client.query({
+  query: gql`
+    query addressAndNetwork {
+      address @client
+      network @client
+    }
+  `
+})
+
+console.log(result)
+/*
+
+{
+  address: "0x1234...",
+  network: { 
+    name: 'homestead',
+    chainId: 1
+  }
+}
+
+*/
+```
+
+Notice the `@client` directive; this tells Apollo Client that we are querying a client resolver.
+
+# Querying a Contract
+
+To query a contract, you must first add a contract to the abi mapping:
+
+```javascript
+const erc20Abi = // ... get the abi from some where
+
+// addContract(name, networkId, address, abi)
+tb.abiMapping.addContract('Dai', 1, '0x6b175474e89094c44da98b954eedeac495271d0f', erc20Abi)
+```
+
+Now you can query functions:
+
+```javascript
+const result = await client.query({
+  query: gql`
+    query daiQuery {
+      name: call(name: Dai, fn: name) @client
+      totalSupply: call(name: Dai, fn: totalSupply) @client
+    }
+  `
+})
+```
+
+We can ask for our balance as well:
+
+```javascript
+const result = await client.query({
+  query: gql`
+    query myBalanceQuery($address: String!) {
+      balance: call(name; Dai, fn: balanceOf, params[$address]) @client
+    }
+  `,
+  variables: {
+    address: '0xc73e0383f3aff3215e6f04b0331d58cecf0ab849'
+  }
+})
+```
+
+The query defines an `address` variable that can configure the call.
+
