@@ -4,7 +4,7 @@ export default {
   input: 'src/index.ts',
   output: {
     dir: '.',
-    format: 'cjs'
+    format: 'cjs',
   },
   preserveModules: true,
   external: [
@@ -13,11 +13,13 @@ export default {
     'graphql-tag',
     'graphql',
     'ethers',
+    'ethers/providers',
     'ethers/utils/interface',
     'ethers/utils',
     'ethers/contract',
     'date-fns',
-    'lodash'
+    'lodash',
+    'zen-observable-ts'
   ],
   plugins: [
     typescript()

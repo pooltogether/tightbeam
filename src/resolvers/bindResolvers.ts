@@ -1,6 +1,6 @@
 import * as mutations from './mutations'
 import * as queries from './queries'
-import { Tightbeam } from '../Tightbeam'
+import { Tightbeam } from '../tightbeam'
 
 /**
  * 

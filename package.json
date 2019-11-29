@@ -10,7 +10,7 @@
   "scripts": {
     "test": "jest",
     "dist": "rollup -c rollup.config.js",
-    "dist-clean": "rm -rf _virtual abis queries resolvers services utils ContractCache.js index.js",
+    "dist-clean": "rm -rf _virtual abis queries resolvers services subscribers types utils ContractCache.js index.js Tightbeam.js",
     "watch": "rollup -w -c rollup.config.js",
     "coverage": "jest --coverage --coverageReporters html",
     "test-watch": "jest --watchAll",

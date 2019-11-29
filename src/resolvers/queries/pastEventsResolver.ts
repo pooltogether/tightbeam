@@ -3,7 +3,7 @@ import { buildFilter } from '../../services/buildFilter'
 import { ProviderSource } from "../../types/ProviderSource"
 import { EventFilter } from "../../types/EventFilter"
 import { LogEvent } from "../../types/LogEvent"
-import { Tightbeam } from "../../Tightbeam"
+import { Tightbeam } from "../../tightbeam"
 
 const debug = require('debug')('pt:pastEventsResolver')
 
