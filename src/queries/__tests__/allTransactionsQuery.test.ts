@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -13,7 +12,7 @@ describe('allTransactionsQuery', () => {
     cache = new InMemoryCache()
     link = new HttpLink({
       uri: 'http://localhost:4000/',
-      fetch
+      fetch: jest.fn()
     });
     client = new ApolloClient({
       cache,
