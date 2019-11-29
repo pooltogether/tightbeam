@@ -1,13 +1,14 @@
 {
-  "mode": "file",
+  "mode": "modules",
   "out": "docs",
   "exclude" : [
     "node_modules",
+    "**/index.ts",
     "**/__tests__/**",
     "**/__mocks__/**"
   ],
   "excludeNotExported": "true",
-  "excludeExternals": "true",
+  "excludeExternals": "false",
   "ignoreCompilerErrors": "true",
   "experimentalDecorators": "true",
   "target": "ES6"
