@@ -1,11 +1,10 @@
 import { encodeEventTopics } from '../utils/encodeEventTopics'
-import { Filter } from 'ethers/providers'
-import { Interface } from 'ethers/utils'
+import { ethers } from 'ethers'
 import { EventFilter } from '../types'
 
 const debug = require('debug')('tightbeam:buildFilter')
 
-export function buildFilter(address: string, ethersInterface: Interface, filterParams: EventFilter): Filter {
+export function buildFilter(address: string, ethersInterface: ethers.utils.Interface, filterParams: EventFilter): ethers.providers.Filter {
   const {
     params,
     topics,

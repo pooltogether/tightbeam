@@ -1,5 +1,4 @@
 import { ProviderSource } from '../../types/ProviderSource'
-import { JsonRpcProvider } from 'ethers/providers'
 import { castToJsonRpcProvider } from '../../utils/castToJsonRpcProvider'
 
 const debug = require('debug')('pt:web3Resolvers')

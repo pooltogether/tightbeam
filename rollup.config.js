@@ -13,10 +13,6 @@ export default {
     'graphql-tag',
     'graphql',
     'ethers',
-    'ethers/providers',
-    'ethers/utils/interface',
-    'ethers/utils',
-    'ethers/contract',
     'date-fns',
     'lodash',
     'zen-observable-ts'

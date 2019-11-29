@@ -1,7 +1,6 @@
 import { allTransactionsQuery, transactionFragment } from '../../../queries'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ethers } from 'ethers'
-import { bigNumberify } from 'ethers/utils'
 
 const { sendTransactionResolver } = require('../sendTransactionResolver')
 
@@ -105,8 +104,8 @@ describe('sendTransactionResolver', () => {
     expect(signer.sendUncheckedTransaction).toHaveBeenCalledWith(expect.objectContaining({
       data: 'encoded',
       to: '0x1234',
-      gasLimit: bigNumberify('222222'),
-      value: bigNumberify('0')
+      gasLimit: ethers.utils.bigNumberify('222222'),
+      value: ethers.utils.bigNumberify('0')
     }))
 
     const cached = cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })
@@ -117,11 +116,11 @@ describe('sendTransactionResolver', () => {
   })
 
   it('should accept value param', async () => {
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
     expect(transaction.value).toEqual('12')
     
     expect(signer.sendUncheckedTransaction).toHaveBeenCalledWith(expect.objectContaining({
-      value: bigNumberify('12')
+      value: ethers.utils.bigNumberify('12')
     }))
 
     const cached = cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })
@@ -130,7 +129,7 @@ describe('sendTransactionResolver', () => {
   })
 
   it('should accept an abi', async () => {
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { abi: 'ERC20', address: '0xabcd', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { abi: 'ERC20', address: '0xabcd', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
     expect(transaction.abi).toEqual('ERC20')
     expect(transaction.name).toEqual(null)
   })
@@ -138,7 +137,7 @@ describe('sendTransactionResolver', () => {
   it('should setup the tx as failed when an error occurs', async () => {
     sendUncheckedTransactionPromise = Promise.reject('FAILED')
 
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
 
     expect(transaction.hash).toEqual(null)
     expect(transaction.error).toEqual('FAILED')
@@ -150,7 +149,7 @@ describe('sendTransactionResolver', () => {
 
     // Now try with Error
     sendUncheckedTransactionPromise = Promise.reject(new Error('failmessage'))
-    const transaction2 = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: bigNumberify('12')}, { cache }, {})
+    const transaction2 = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
     expect(transaction2.error).toEqual('failmessage')
   })
 })

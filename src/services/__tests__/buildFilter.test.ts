@@ -1,13 +1,14 @@
 import { buildFilter } from '../buildFilter'
-import { Interface } from 'ethers/utils'
 import { abi } from '../../__mocks__/abi'
+
+const { ethers } = jest.requireActual('ethers')
 
 describe('buildFilter', () => {
 
   let ethersInterface
 
   beforeEach(() => {
-    ethersInterface = new Interface(abi)
+    ethersInterface = new ethers.utils.Interface(abi)
   })
 
   it('should accept specific event names', () => {

@@ -1,7 +1,7 @@
 import { allTransactionsQuery, transactionFragment } from '../../queries'
 import { gasCalculator } from '../../utils'
 import { ContractCache } from '../../ContractCache'
-import { bigNumberify } from 'ethers/utils'
+import { ethers } from 'ethers'
 import { watchTransaction } from '../../services'
 import { Transaction, TransactionParams } from '../../types/Transaction'
 import { ProviderSource } from '../../types/ProviderSource'
@@ -38,9 +38,9 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   }
 
   if (value) {
-    value = bigNumberify(value)
+    value = ethers.utils.bigNumberify(value)
   } else {
-    value = bigNumberify('0')
+    value = ethers.utils.bigNumberify('0')
   }
 
   let newTx = new Transaction()

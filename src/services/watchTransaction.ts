@@ -1,10 +1,10 @@
 import { transactionFragment } from '../queries'
 import { Transaction } from '../types'
-import { BaseProvider } from 'ethers/providers'
+import { ethers } from 'ethers'
 
 const debug = require('debug')('tightbeam:watchTransaction')
 
-export async function watchTransaction(id: string, cache, provider: BaseProvider): Promise<void> {
+export async function watchTransaction(id: string, cache, provider: ethers.providers.BaseProvider): Promise<void> {
   const readTx = () => {
     return cache.readFragment({ fragment: transactionFragment, id })
   }

@@ -1,7 +1,7 @@
-import { BaseProvider, JsonRpcProvider } from 'ethers/providers'
+import { ethers } from 'ethers'
 
-export function castToJsonRpcProvider(provider: BaseProvider): JsonRpcProvider {
-  if (!(provider instanceof JsonRpcProvider)) {
+export function castToJsonRpcProvider(provider: ethers.providers.BaseProvider): ethers.providers.JsonRpcProvider {
+  if (!(provider instanceof ethers.providers.JsonRpcProvider)) {
     throw new Error('requires JsonRpcProvider')
   }
   return provider

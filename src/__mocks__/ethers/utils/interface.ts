@@ -1,1 +1,0 @@
-export const Interface = jest.fn()

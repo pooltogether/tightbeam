@@ -1,25 +1,25 @@
-import { BigNumberish, BigNumber, bigNumberify } from "ethers/utils"
+import { ethers } from "ethers"
 
 export function gasCalculator(
-  gasLimit: BigNumberish,
-  estimatedGasLimit: BigNumberish,
-  scaleGasEstimate: BigNumberish,
-  minimumGas: BigNumberish
-  ): BigNumber {
+  gasLimit: ethers.utils.BigNumberish,
+  estimatedGasLimit: ethers.utils.BigNumberish,
+  scaleGasEstimate: ethers.utils.BigNumberish,
+  minimumGas: ethers.utils.BigNumberish
+  ): ethers.utils.BigNumber {
 
-  let result: BigNumber
+  let result: ethers.utils.BigNumber
 
   if (gasLimit) {
-    result = bigNumberify(gasLimit)
+    result = ethers.utils.bigNumberify(gasLimit)
   } else if (estimatedGasLimit) {
-    result = bigNumberify(estimatedGasLimit)
+    result = ethers.utils.bigNumberify(estimatedGasLimit)
     if (scaleGasEstimate) {
-      result = bigNumberify(scaleGasEstimate).mul(result)
+      result = ethers.utils.bigNumberify(scaleGasEstimate).mul(result)
     }
   }
 
   if (minimumGas && result < minimumGas) {
-    result = bigNumberify(minimumGas)
+    result = ethers.utils.bigNumberify(minimumGas)
   }
 
   return result

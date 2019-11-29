@@ -1,6 +1,6 @@
-import { Block as EthersBlock } from 'ethers/providers'
+import { ethers } from 'ethers'
 
-export interface Block extends EthersBlock {
+export interface Block extends ethers.providers.Block {
   __typename: string
   id: number
 }

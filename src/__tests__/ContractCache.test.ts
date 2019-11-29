@@ -1,7 +1,6 @@
 import { ContractCache } from '../ContractCache'
 import { AbiMapping } from '../abis/AbiMapping'
-import { Contract } from 'ethers/contract'
-import { Interface } from 'ethers/utils/interface'
+import { ethers } from 'ethers'
 
 describe('ContractCache', () => {
 
@@ -94,7 +93,7 @@ describe('ContractCache', () => {
   describe('getContractByName()', () => {
     it('should retrieve a contract', async () => {
       const result = await cache.getContractByName('Foo')
-      expect(result).toBeInstanceOf(Contract)
+      expect(result).toBeInstanceOf(ethers.Contract)
 
       // and ensure it reuses the contract
       let result2 = await cache.getContractByName('Foo')
@@ -113,7 +112,7 @@ describe('ContractCache', () => {
   describe('getContractByAddress()', () => {
     it('should retrieve a contract', async () => {
       const result = await cache.getContractByAddress('0xabcd')
-      expect(result).toBeInstanceOf(Contract)
+      expect(result).toBeInstanceOf(ethers.Contract)
     })
 
     it('should fail if no address is passed', async () => {
@@ -132,7 +131,7 @@ describe('ContractCache', () => {
 
     it('should return the correct abi interface', async () => {
       const result = await cache.getAbiInterfaceByName('Abby')
-      expect(result).toBeInstanceOf(Interface)
+      expect(result).toBeInstanceOf(ethers.utils.Interface)
 
       // should reuse
       const result2 = await cache.getAbiInterfaceByName('Abby')
@@ -154,7 +153,7 @@ describe('ContractCache', () => {
       it('should use the abi first', async () => {
         const result = await cache.resolveContract({ abi: 'Hello', contractName: 'Hello', address: '0x1234' })
   
-        expect(result).toBeInstanceOf(Contract)
+        expect(result).toBeInstanceOf(ethers.Contract)
       })
   
       it('should require an address', async () => {
@@ -167,7 +166,7 @@ describe('ContractCache', () => {
         const result = await cache.resolveContract({ contractName: 'Hello' })
   
         // NOTE: this is a problem.  Here we really need to test that we're setting the right values
-        expect(result).toBeInstanceOf(Contract)
+        expect(result).toBeInstanceOf(ethers.Contract)
       })
     })
 
@@ -175,7 +174,7 @@ describe('ContractCache', () => {
       it('should use the abi first', async () => {
         const result = await cache.resolveContract({ address: '0xabcd' })
   
-        expect(result).toBeInstanceOf(Contract)
+        expect(result).toBeInstanceOf(ethers.Contract)
       })
     })
   })

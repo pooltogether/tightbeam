@@ -1,4 +1,4 @@
-import { defaultAbiCoder } from 'ethers/utils'
+import { ethers } from 'ethers'
 import { EventTopics } from '../types/EventTopics'
 
 export function encodeEventTopics(extraTopics: EventTopics): Array<string> {
@@ -13,7 +13,7 @@ export function encodeEventTopics(extraTopics: EventTopics): Array<string> {
     const value = extraTopics.values[extraTopicIndex]
     let encodedValue = null
     if (value) {
-      encodedValue = defaultAbiCoder.encode([type], [value])
+      encodedValue = ethers.utils.defaultAbiCoder.encode([type], [value])
     }
     encodedEventTopics.push(encodedValue)
   }

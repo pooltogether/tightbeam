@@ -1,6 +1,5 @@
 import { AbiMapping } from './abis/AbiMapping'
-import { Interface } from 'ethers/utils/interface'
-import { Contract } from 'ethers/contract'
+import { ethers } from 'ethers'
 import { ProviderSource } from './types/ProviderSource'
 
 const debug = require('debug')('tightbeam:ContractCache')
@@ -9,8 +8,8 @@ const debug = require('debug')('tightbeam:ContractCache')
  * Look up contracts or ABIs by name or address.  Values are cached.  Also offers a contract resolver to easily retrieve an [[ethers.Contract]] object.
  */
 export class ContractCache {
-  contractCache: Map<number, Map<string, Contract>>
-  ifaceCache: Map<number, Map<string, Interface>>
+  contractCache: Map<number, Map<string, ethers.Contract>>
+  ifaceCache: Map<number, Map<string, ethers.utils.Interface>>
 
   constructor (
     public readonly abiMapping: AbiMapping,
@@ -22,8 +21,8 @@ export class ContractCache {
     if (!providerSource) {
       throw new Error('provider source must be defined')
     }
-    this.contractCache = new Map<number, Map<string, Contract>>()
-    this.ifaceCache = new Map<number, Map<string, Interface>>()
+    this.contractCache = new Map<number, Map<string, ethers.Contract>>()
+    this.ifaceCache = new Map<number, Map<string, ethers.utils.Interface>>()
   }
 
   /**
@@ -31,7 +30,7 @@ export class ContractCache {
    * 
    * @param contractName The contract name used to register the contract in the [[AbiMapping]]
    */
-  async getContractByName (contractName: string): Promise<Contract> {
+  async getContractByName (contractName: string): Promise<ethers.Contract> {
     if (!contractName) throw new Error('Contract name must be defined')
 
     const provider = await this.providerSource()
@@ -52,7 +51,7 @@ export class ContractCache {
    * 
    * @param address The address that the contract was added under in the [[AbiMapping]]
    */
-  async getContractByAddress (address: string): Promise<Contract> {
+  async getContractByAddress (address: string): Promise<ethers.Contract> {
     if (!address) throw new Error('Address must be defined')
 
     const provider = await this.providerSource()
@@ -69,7 +68,7 @@ export class ContractCache {
       if (!abiDef) {
         throw new Error(`Could not find contract for address ${address} and chain id ${chainId}`)
       }
-      contract = new Contract(address, abiDef.abi, provider)
+      contract = new ethers.Contract(address, abiDef.abi, provider)
       this.contractCache[chainId][address] = contract
     }
     return contract
@@ -80,29 +79,29 @@ export class ContractCache {
    * 
    * @param abiName The name of the ABI added in the [[AbiMapping]]
    */
-  async getAbiInterfaceByName (abiName): Promise<Interface> {
+  async getAbiInterfaceByName (abiName): Promise<ethers.utils.Interface> {
     let iface = this.ifaceCache[abiName]
     if (!iface) {
       const abi: any = this.abiMapping.getAbiDefinition(abiName)
       if (!abi) {
         throw new Error(`Could not find abi for name ${abiName}`)
       }
-      iface = new Interface(abi)
+      iface = new ethers.utils.Interface(abi)
       this.ifaceCache[abiName] = iface
     }
     debug(`getInterface(${abiName}): `, iface)
     return iface
   }
 
-  async resolveContract({ abi, address, contractName }): Promise<Contract> {
-    let contract: Contract
+  async resolveContract({ abi, address, contractName }): Promise<ethers.Contract> {
+    let contract: ethers.Contract
     const provider = await this.providerSource()
     if (abi) {
       let ethersInterface = await this.getAbiInterfaceByName(abi)
       if (!address) {
         throw new Error(`abi ${abi} selected but no address passed`)
       }
-      contract = new Contract(address, ethersInterface.abi, provider)
+      contract = new ethers.Contract(address, ethersInterface.abi, provider)
     } else if (address) {
       contract = await this.getContractByAddress(address)
     } else if (contractName) {
