@@ -1,3 +1,3 @@
-import { BaseProvider } from "ethers/providers";
+import { ethers } from "ethers";
 
-export type ProviderSource = () => Promise<BaseProvider>
+export type ProviderSource = () => Promise<ethers.providers.BaseProvider>

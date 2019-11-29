@@ -1,7 +1,6 @@
-import { Log } from "ethers/providers";
-import { LogDescription } from "ethers/utils";
+import { ethers } from "ethers";
 
 export interface LogEvent {
-  log: Log
-  event: LogDescription
+  log: ethers.providers.Log
+  event: ethers.utils.LogDescription
 }
