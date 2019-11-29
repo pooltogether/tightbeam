@@ -1,5 +1,3 @@
-import { TightbeamConfig } from '../../../TightbeamConfig'
-
 const { pastEventsResolver } = require('../pastEventsResolver')
 
 jest.mock('../../../services/buildFilter')
@@ -12,7 +10,9 @@ describe('pastEventsResolver', () => {
 
   beforeEach(async () => {
     logs = ['log1']
-    config = new TightbeamConfig(10)
+    config = {
+      defaultFromBlock: 10
+    }
     provider = {
       getLogs: jest.fn(() => logs)
     }

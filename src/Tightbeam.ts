@@ -1,0 +1,52 @@
+import { ContractCache } from './ContractCache'
+import { AbiMapping } from './abis/AbiMapping'
+import { ProviderSource } from './types/ProviderSource'
+import { ethers } from 'ethers'
+import { bindResolvers } from './resolvers/bindResolvers'
+
+const merge = require('lodash.merge')
+
+export interface TightbeamOptions {
+  abiMapping?: AbiMapping
+  providerSource?: ProviderSource,
+  defaultFromBlock?: number
+}
+
+export class Tightbeam {
+  public contractCache: ContractCache
+  public abiMapping: AbiMapping
+  public providerSource: ProviderSource
+  public defaultFromBlock: number
+
+  constructor (
+    options?: TightbeamOptions
+  ) {
+    const { 
+      providerSource,
+      abiMapping,
+      defaultFromBlock
+    } = options || {}
+    this.providerSource = providerSource || (async () => ethers.getDefaultProvider())
+    this.abiMapping = abiMapping || new AbiMapping()
+    this.defaultFromBlock = defaultFromBlock || 0
+    this.contractCache = new ContractCache(this.abiMapping, this.providerSource)
+  }
+
+  resolvers (clientResolvers = {}) {
+    return merge(clientResolvers, this.bindResolvers())
+  }
+
+  bindResolvers () {
+    return bindResolvers(this)
+  }
+
+  defaultCacheData(otherState = {}) {
+    return merge(otherState, 
+      {
+        data: {
+          transactions: []
+        }
+      }
+    )
+  }
+}

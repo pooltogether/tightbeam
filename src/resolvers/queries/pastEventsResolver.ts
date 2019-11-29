@@ -1,16 +1,16 @@
 import { ContractCache } from "../../ContractCache"
-import { TightbeamConfig } from "../../TightbeamConfig"
 import { buildFilter } from '../../services/buildFilter'
 import { ProviderSource } from "../../types/ProviderSource"
 import { EventFilter } from "../../types/EventFilter"
 import { LogEvent } from "../../types/LogEvent"
+import { Tightbeam } from "../../Tightbeam"
 
 const debug = require('debug')('pt:pastEventsResolver')
 
 export async function pastEventsResolver(
   contractCache: ContractCache,
   providerSource: ProviderSource,
-  config: TightbeamConfig,
+  tightbeam: Tightbeam,
   opts, eventFilter: EventFilter, context?, info?
 ): Promise<Array<LogEvent>> {
   
@@ -27,7 +27,7 @@ export async function pastEventsResolver(
     contract.interface,
     {
       ...eventFilter,
-      fromBlock: eventFilter.fromBlock || config.defaultFromBlock
+      fromBlock: eventFilter.fromBlock || tightbeam.defaultFromBlock
     }
   )
 

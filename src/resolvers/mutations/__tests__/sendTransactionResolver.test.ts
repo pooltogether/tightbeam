@@ -5,6 +5,7 @@ import { bigNumberify } from 'ethers/utils'
 
 const { sendTransactionResolver } = require('../sendTransactionResolver')
 
+jest.mock('../../../utils/castToJsonRpcProvider')
 jest.mock('../../../services/watchTransaction')
 
 const { watchTransaction } = require('../../../services/watchTransaction')

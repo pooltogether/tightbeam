@@ -5,6 +5,7 @@ import { bigNumberify } from 'ethers/utils'
 import { watchTransaction } from '../../services'
 import { Transaction, TransactionParams } from '../../types/Transaction'
 import { ProviderSource } from '../../types/ProviderSource'
+import { castToJsonRpcProvider } from '../../utils/castToJsonRpcProvider'
 
 const debug = require('debug')('tightbeam:sendTransaction')
 
@@ -22,7 +23,8 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     minimumGas
   } = args
   
-  const provider = await providerSource()
+  const provider = castToJsonRpcProvider(await providerSource())
+
   const signer = provider.getSigner()
 
   let contract = await contractCache.resolveContract({abi, address, contractName: name })

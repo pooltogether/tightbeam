@@ -1,4 +1,6 @@
-import { accountResolver } from '../accountResolver'
+const { accountResolver } = require('../accountResolver')
+
+jest.mock('../../../utils/castToJsonRpcProvider')
 
 describe('accountResolver', () => {
 

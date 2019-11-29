@@ -1,3 +1,3 @@
-import { JsonRpcProvider } from "ethers/providers";
+import { BaseProvider } from "ethers/providers";
 
-export type ProviderSource = () => Promise<JsonRpcProvider>
+export type ProviderSource = () => Promise<BaseProvider>

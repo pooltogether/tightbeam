@@ -50,3 +50,39 @@ $ yarn add @pooltogether/tightbeam
 **Note:** The latest version of Apollo Client doesn't handle errors correctly when using client resolvers.  See [issue 4575](https://github.com/apollographql/apollo-client/issues/4575).  Errors will be swallowed.
 
 Instead, we recommended that you stick with Apollo Link State until the client has been updated.
+
+# Usage
+
+The simplest way to get started is to attach the Tightbeam resolvers to ApolloClient:
+
+```javascript
+
+import { Tightbeam } from 'tightbeam'
+
+const tb = new Tightbeam()
+
+const cache = new InMemoryCache()
+
+// Ensure that the expected defaults are present
+cache.writeData(tb.defaultCacheData())
+
+const httpLink = createHttpLink({
+  uri: CHAIN_URIS[DEFAULT_CHAIN_ID]
+});
+
+// Now attach the Tightbeam resolvers
+const stateLink = withClientState({
+  cache,
+  resolvers: tb.resolvers()
+})
+
+client = new ApolloClient({
+  cache,
+  link: ApolloLink.from([stateLink, httpLink])
+})
+
+```
+
+The `defaultCacheData()` function takes one optional argument that is your desired default state.  It will merge the two.
+
+The `resolvers()` function takes one optional argument of resolvers.  It will merge the Tightbeam resolvers into the passed object.

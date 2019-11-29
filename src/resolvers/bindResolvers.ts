@@ -1,17 +1,22 @@
 import * as mutations from './mutations'
 import * as queries from './queries'
-import { ContractCache } from '../ContractCache'
-import { ProviderSource } from '../types/ProviderSource'
-import { TightbeamConfig } from '../TightbeamConfig'
+import { Tightbeam } from '../Tightbeam'
 
-export function bindResolvers(contractCache: ContractCache, providerSource: ProviderSource, tightbeamConfig: TightbeamConfig) {
+/**
+ * 
+ * @param tightbeam The Tightbeam object
+ */
+export function bindResolvers(tightbeam: Tightbeam) {
   return {
     Query: {
-      call: queries.callResolver.bind(null, contractCache),
-      pastEvents: queries.pastEventsResolver.bind(null, contractCache, providerSource, tightbeamConfig)
+      account: function () { queries.accountResolver(tightbeam.providerSource) },
+      block: function (opts, args, context, info) { queries.blockResolver(tightbeam.providerSource, opts, args, context, info) },
+      call: function (opts, args, context, info) { queries.callResolver(tightbeam.contractCache, tightbeam.providerSource, opts, args, context, info) },
+      network: function () { queries.networkResolver(tightbeam.providerSource) },
+      pastEvents: function (opts, args, context, info) { queries.pastEventsResolver(tightbeam.contractCache, tightbeam.providerSource, opts, args, context, info) }
     },
     Mutation: {
-      sendTransaction: mutations.sendTransactionResolverFactory(contractCache, providerSource)
+      sendTransaction: mutations.sendTransactionResolverFactory(tightbeam.contractCache, tightbeam.providerSource)
     }
   }
 }

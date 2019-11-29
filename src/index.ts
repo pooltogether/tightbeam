@@ -6,7 +6,10 @@ import * as subscribers from './subscribers'
 import * as types from './types'
 import * as utils from './utils'
 
-export {
+export * from './ContractCache'
+export * from './Tightbeam'
+
+export default {
   abis,
   queries,
   resolvers,
@@ -15,6 +18,3 @@ export {
   types,
   utils
 }
-
-export * from './ContractCache'
-export * from './TightbeamConfig'
