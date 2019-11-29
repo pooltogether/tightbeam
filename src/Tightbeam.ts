@@ -3,6 +3,8 @@ import { AbiMapping } from './abis/AbiMapping'
 import { ProviderSource } from './types/ProviderSource'
 import { ethers } from 'ethers'
 import { bindResolvers } from './resolvers/bindResolvers'
+import { EventFilter } from './types'
+import { eventSubscriber } from './subscribers'
 
 const merge = require('lodash.merge')
 
@@ -34,6 +36,10 @@ export class Tightbeam {
 
   resolvers (clientResolvers = {}) {
     return merge(clientResolvers, this.bindResolvers())
+  }
+
+  async subscribeEvent (eventFilter: EventFilter) {
+    return await eventSubscriber(this.contractCache, this.providerSource, this.defaultFromBlock, eventFilter)      
   }
 
   bindResolvers () {

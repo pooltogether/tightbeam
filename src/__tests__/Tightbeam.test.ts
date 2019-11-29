@@ -1,7 +1,12 @@
-import { Tightbeam } from '../Tightbeam'
 import { AbiMapping } from '../abis/AbiMapping'
 import { ContractCache } from '../ContractCache'
 import { ethers } from 'ethers'
+
+const { Tightbeam } = require('../Tightbeam')
+
+jest.mock('../subscribers/eventSubscriber')
+
+const { eventSubscriber } = require('../subscribers/eventSubscriber')
 
 describe('Tightbeam', () => {
   describe('contructor()', () => {
@@ -73,6 +78,16 @@ describe('Tightbeam', () => {
           transactions: []
         }
       })
+    })
+  })
+
+  describe('subscribeEvent()', () => {
+    it('should create an event subscriber', async () => {
+      const tb = new Tightbeam()
+
+      await tb.subscribeEvent('test')
+
+      expect(eventSubscriber).toHaveBeenCalledWith(tb.contractCache, tb.providerSource, tb.defaultFromBlock, 'test')
     })
   })
 })

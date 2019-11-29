@@ -1,7 +1,6 @@
 import { Observable } from 'zen-observable-ts'
 import { ContractCache } from '../ContractCache'
 import { ProviderSource } from '../types/ProviderSource'
-import { TightbeamConfig } from '../TightbeamConfig'
 import { EventFilter } from '../types/EventFilter'
 import { buildFilter } from '../services/buildFilter'
 import { LogEvent } from '../types/LogEvent'
@@ -11,7 +10,7 @@ const debug = require('debug')('pt:subscriberFactory')
 export async function eventSubscriber(
   contractCache: ContractCache,
   providerSource: ProviderSource,
-  config: TightbeamConfig,
+  defaultFromBlock: number,
   eventFilter: EventFilter
 ): Promise<Observable<LogEvent>> {
 
@@ -28,20 +27,23 @@ export async function eventSubscriber(
     contract.interface,
     {
       ...eventFilter,
-      fromBlock: eventFilter.fromBlock || config.defaultFromBlock
+      fromBlock: eventFilter.fromBlock || defaultFromBlock
     }
   )
 
   const provider = await providerSource()
 
   return new Observable<LogEvent>(observer => {
-    provider.on(filter, (log) => {
+    const cb = (log) => {
       const event = {
         log,
         event: contract.interface.parseLog(log)
       }
       debug(`filter received `, filter, event)
       observer.next(event)
-    })
+    }
+    provider.on(filter, cb)
+
+    return () => provider.removeListener(filter, cb)
   })
 }
