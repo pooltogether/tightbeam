@@ -82,11 +82,11 @@ export class ContractCache {
   async getAbiInterfaceByName (abiName): Promise<ethers.utils.Interface> {
     let iface = this.ifaceCache[abiName]
     if (!iface) {
-      const abi: any = this.abiMapping.getAbiDefinition(abiName)
-      if (!abi) {
+      const abiDef = this.abiMapping.getAbiDefinition(abiName)
+      if (!abiDef) {
         throw new Error(`Could not find abi for name ${abiName}`)
       }
-      iface = new ethers.utils.Interface(abi)
+      iface = new ethers.utils.Interface(abiDef.abi)
       this.ifaceCache[abiName] = iface
     }
     debug(`getInterface(${abiName}): `, iface)

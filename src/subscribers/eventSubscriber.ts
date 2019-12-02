@@ -5,7 +5,7 @@ import { EventFilter } from '../types/EventFilter'
 import { buildFilter } from '../services/buildFilter'
 import { LogEvent } from '../types/LogEvent'
 
-const debug = require('debug')('pt:subscriberFactory')
+const debug = require('debug')('tightbeam:eventSubscriber')
 
 export async function eventSubscriber(
   contractCache: ContractCache,
