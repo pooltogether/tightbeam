@@ -19,7 +19,7 @@ export async function eventSubscriber(
   const contract = await contractCache.resolveContract({
     abi: eventFilter.abi,
     address: eventFilter.address,
-    contractName: eventFilter.name
+    name: eventFilter.name
   })
 
   const filter = buildFilter(

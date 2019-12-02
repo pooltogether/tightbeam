@@ -93,7 +93,7 @@ export class ContractCache {
     return iface
   }
 
-  async resolveContract({ abi, address, contractName }): Promise<ethers.Contract> {
+  async resolveContract({ abi, address, name }): Promise<ethers.Contract> {
     let contract: ethers.Contract
     const provider = await this.providerSource()
     if (abi) {
@@ -104,8 +104,10 @@ export class ContractCache {
       contract = new ethers.Contract(address, ethersInterface.abi, provider)
     } else if (address) {
       contract = await this.getContractByAddress(address)
-    } else if (contractName) {
-      contract = await this.getContractByName(contractName)
+    } else if (name) {
+      contract = await this.getContractByName(name)
+    } else {
+      throw new Error(`abi, address or name must be defined`)
     }
 
     return contract

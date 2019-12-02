@@ -14,7 +14,7 @@ export async function callResolver(contractCache: ContractCache, providerSource:
 
   params = params || []
 
-  const contract = await contractCache.resolveContract({ abi, address, contractName: name })
+  const contract = await contractCache.resolveContract({ abi, address, name })
   const identifier = JSON.stringify({ abi, name, address })
 
   const provider = await providerSource()

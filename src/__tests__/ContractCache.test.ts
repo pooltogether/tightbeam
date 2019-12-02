@@ -149,9 +149,13 @@ describe('ContractCache', () => {
       abiMapping.addContract('Hello', 1234, '0xabcd', abi)
     })
 
+    it('should fail when no params are passed', async () => {
+      await expect(cache.resolveContract({})).rejects.toEqual(new Error(`abi, address or name must be defined`))
+    })
+
     describe('when passing an abi', () => {
       it('should use the abi first', async () => {
-        const result = await cache.resolveContract({ abi: 'Hello', contractName: 'Hello', address: '0x1234' })
+        const result = await cache.resolveContract({ abi: 'Hello', name: 'Hello', address: '0x1234' })
   
         expect(result).toBeInstanceOf(ethers.Contract)
       })
@@ -163,7 +167,7 @@ describe('ContractCache', () => {
 
     describe('when passing a contract name', () => {
       it('should use the abi first', async () => {
-        const result = await cache.resolveContract({ contractName: 'Hello' })
+        const result = await cache.resolveContract({ name: 'Hello' })
   
         // NOTE: this is a problem.  Here we really need to test that we're setting the right values
         expect(result).toBeInstanceOf(ethers.Contract)

@@ -27,7 +27,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
 
   const signer = provider.getSigner()
 
-  let contract = await contractCache.resolveContract({abi, address, contractName: name })
+  let contract = await contractCache.resolveContract({abi, address, name })
   contract = contract.connect(signer)
   address = contract.address
 
