@@ -11,7 +11,10 @@ export async function pastEventsResolver(
   contractCache: ContractCache,
   providerSource: ProviderSource,
   tightbeam: Tightbeam,
-  opts, eventFilter: EventFilter, context?, info?
+  opts, 
+  eventFilter: EventFilter, 
+  context?, 
+  info?
 ): Promise<Array<LogEvent>> {
   
   debug(eventFilter)

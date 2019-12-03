@@ -47,7 +47,10 @@ export function bindResolvers(tightbeam: Tightbeam) {
       }
     },
     Mutation: {
-      sendTransaction: mutations.sendTransactionResolverFactory(tightbeam.contractCache, tightbeam.providerSource)
+      sendTransaction: mutations.sendTransactionResolverFactory(
+        tightbeam.contractCache,
+        tightbeam.providerSource
+      )
     }
   }
 }

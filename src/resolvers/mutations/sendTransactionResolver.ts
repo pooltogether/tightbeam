@@ -45,7 +45,8 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
 
   let newTx = new Transaction()
 
-  newTx = {...newTx,
+  newTx = {
+    ...newTx,
     id: txId,
     fn,
     name: name || null,
