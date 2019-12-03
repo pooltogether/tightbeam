@@ -17,6 +17,10 @@ export class Transaction {
   public sent: boolean = false
   public hash: string = null
   public error: string = null
+  public gasLimit: string = null
+  public gasPrice: string = null
+  public scaleGasEstimate: string = null
+  public minimumGas: string = null
   public blockNumber: number = null
   public params: TransactionParams = new TransactionParams([])
   public value: string = null
