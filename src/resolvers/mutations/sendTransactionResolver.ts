@@ -81,9 +81,19 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   sendUncheckedTransaction(contractCache, providerSource, newTx)
     .then(hash => {
       const transaction = readTx()
-      transaction.hash = hash
-      transaction.sent = true
-      cache.writeData({ id, data: transaction })
+
+      const data = {
+        ...transaction,
+        hash,
+        sent: true
+      }
+      debug(`Tx sent!`)
+
+      cache.writeFragment({
+        id,
+        fragment: transactionFragment,
+        data
+      })
 
       watchTransaction(id, cache, provider)
 
@@ -92,11 +102,21 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     .catch(error => {
       console.error(error)
       debug(`Error occured while sending transaction`, error)
+      
       const transaction = readTx()
-      transaction.sent = true
-      transaction.completed = true
-      transaction.error = error.message ? error.message : error
-      cache.writeData({ id, data: transaction })
+
+      const data = {
+        ...transaction, 
+        completed: true, 
+        sent: true, 
+        error: error.message
+      }
+
+      cache.writeFragment({
+        id,
+        fragment: transactionFragment,
+        data
+      })
 
       return transaction
     })

@@ -6,7 +6,7 @@ import { ProviderSource } from '../types/ProviderSource'
 import { gasCalculator } from '../utils'
 import { castToJsonRpcProvider } from '../utils/castToJsonRpcProvider'
 
-const debug = require('debug')('tightbeam:sendUncheckedTx')
+const debug = require('debug')('tightbeam:sendUncheckedTransaction')
 
 export async function sendUncheckedTransaction(
   contractCache: ContractCache, 
