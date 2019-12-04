@@ -39,6 +39,18 @@ describe('bindResolvers', () => {
 
   it('should bind pastEvents', () => {
     bindResolvers(tightbeam).Query.pastEvents('a', 'b', 'c', 'd')
-    expect(queries.pastEventsResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 'a', 'b', 'c', 'd')
+    expect(queries.pastEventsResolver).toHaveBeenCalledWith(
+      'contractCache',
+      'providerSource',
+      {
+        "abiMapping": "abiMapping",
+        "contractCache": "contractCache",
+        "providerSource": "providerSource"
+      },
+      'a',
+      'b',
+      'c',
+      'd'
+    )
   })
 })

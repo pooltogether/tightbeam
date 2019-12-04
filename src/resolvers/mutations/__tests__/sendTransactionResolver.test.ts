@@ -58,7 +58,7 @@ describe('sendTransactionResolver', () => {
       }
     }
 
-    sendUncheckedTransactionPromise = Promise.resolve('txhash')
+    sendUncheckedTransactionPromise = Promise.resolve()
 
     signer = {
       sendUncheckedTransaction: jest.fn(() => sendUncheckedTransactionPromise)
@@ -76,11 +76,39 @@ describe('sendTransactionResolver', () => {
   })
 
   it('should complain when the fn does not exist', async () => {
-    await expect(sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'badFn', params: [1, "hello"]}, { cache }, {})).rejects.toEqual(new Error('Unknown function badFn for {"name":"Dai","address":"0x1234"}'))
+    await expect(sendTransactionResolver(
+      contractCache,
+      providerSource,
+      1,
+      {},
+      {
+        name: 'Dai',
+        fn: 'badFn',
+        params: [1, "hello"]
+      },
+      { cache },
+      {}
+    )).rejects.toEqual(new Error('Unknown function badFn for {"name":"Dai","address":"0x1234"}'))
   })
 
   it('should call a function when no value passed', async () => {
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"]}, { cache }, {})
+    const transaction = await sendTransactionResolver(
+      contractCache,
+      providerSource,
+      1,
+      {},
+      {
+        name: 'Dai',
+        fn: 'callMe',
+        gasPrice: ethers.utils.bigNumberify('12'),
+        gasLimit: ethers.utils.bigNumberify('24'),
+        scaleGasEstimate: ethers.utils.bigNumberify('36'),
+        minimumGas: ethers.utils.bigNumberify('48'),
+        params: [1, "hello"]
+      },
+      { cache },
+      {}
+    )
 
     expect(transaction).toMatchObject({
       __typename: 'Transaction',
@@ -90,66 +118,103 @@ describe('sendTransactionResolver', () => {
       abi: null,
       address: '0x1234',
       completed: false,
-      sent: true,
-      hash: 'txhash',
+      sent: false,
+      hash: null,
+      gasPrice: '12',
+      gasLimit: '24',
+      scaleGasEstimate: '36',
+      minimumGas: '48',
       error: null,
       blockNumber: null,
       params: {
         values: ['1', 'hello'],
         __typename: 'JSON'
       },
-      value: '0'
+      value: null
     })
     
-    expect(signer.sendUncheckedTransaction).toHaveBeenCalledWith(expect.objectContaining({
-      data: 'encoded',
-      to: '0x1234',
-      gasLimit: ethers.utils.bigNumberify('222222'),
-      value: ethers.utils.bigNumberify('0')
-    }))
-
     const cached = cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })
 
     expect(cached).toMatchObject(transaction)
-
-    expect(watchTransaction).toHaveBeenCalledWith('Transaction:1', cache, provider)
   })
 
   it('should accept value param', async () => {
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache,
+      providerSource,
+      1,
+      {},
+      {
+        name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')
+      },
+      { cache },
+      {}
+    )
     expect(transaction.value).toEqual('12')
     
-    expect(signer.sendUncheckedTransaction).toHaveBeenCalledWith(expect.objectContaining({
-      value: ethers.utils.bigNumberify('12')
-    }))
-
     const cached = cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })
 
     expect(cached.value).toEqual('12')
   })
 
   it('should accept an abi', async () => {
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { abi: 'ERC20', address: '0xabcd', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache,
+      providerSource,
+      1,
+      {},
+      {
+        abi: 'ERC20',
+        address: '0xabcd',
+        fn: 'callMe',
+        params: [1, "hello"],
+        value: ethers.utils.bigNumberify('12')
+      },
+      { cache },
+      {}
+    )
     expect(transaction.abi).toEqual('ERC20')
     expect(transaction.name).toEqual(null)
   })
 
   it('should setup the tx as failed when an error occurs', async () => {
-    sendUncheckedTransactionPromise = Promise.reject('FAILED')
-
-    const transaction = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
+    const transaction = await sendTransactionResolver(contractCache,
+      providerSource,
+      1,
+      {}, 
+      {
+        name: 'Dai',
+        fn: 'callMe',
+        params: [1, "hello"],
+        value: ethers.utils.bigNumberify('12')
+      },
+      { cache },
+      {}
+    )
 
     expect(transaction.hash).toEqual(null)
-    expect(transaction.error).toEqual('FAILED')
-    expect(transaction.completed).toEqual(true)
-    expect(transaction.sent).toEqual(true)
+    expect(transaction.error).toEqual(null)
+    expect(transaction.completed).toEqual(false)
+    expect(transaction.sent).toEqual(false)
 
     expect(cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })).toMatchObject(transaction)
     expect(watchTransaction).not.toHaveBeenCalled()
 
-    // Now try with Error
+
+
+    // One more time, with error!
     sendUncheckedTransactionPromise = Promise.reject(new Error('failmessage'))
-    const transaction2 = await sendTransactionResolver(contractCache, providerSource, 1, {}, { name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')}, { cache }, {})
-    expect(transaction2.error).toEqual('failmessage')
+    await sendTransactionResolver(
+      contractCache,
+      providerSource,
+      1,
+      {},
+      {
+        name: 'Dai',
+        fn: 'callMe',
+        params: [1, "hello"],
+        value: ethers.utils.bigNumberify('12')
+      },
+      { cache },
+      {}
+    )
   })
 })

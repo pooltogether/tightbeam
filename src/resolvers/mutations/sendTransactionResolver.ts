@@ -76,8 +76,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   }
 
   sendUncheckedTransaction(contractCache, providerSource, newTx)
-    .then(async function (hash) {
-      console.log('then!')
+    .then(hash => {
       const transaction = readTx()
       transaction.hash = hash
       transaction.sent = true
