@@ -63,10 +63,13 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
 
   const query = allTransactionsQuery
   const data = cache.readQuery({ query })
-  data.transactions.push(newTx)
-  cache.writeQuery({ query, data })
 
-
+  cache.writeQuery({
+    query,
+    data: {
+      transactions: data.transactions.concat([newTx])
+    } 
+  })
 
 
 
