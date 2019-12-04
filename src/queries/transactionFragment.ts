@@ -15,6 +15,10 @@ export const transactionFragment = gql`
     hash
     fn
     sent
+    gasLimit
+    gasPrice
+    scaleGasEstimate
+    minimumGas
     value
   }
 `

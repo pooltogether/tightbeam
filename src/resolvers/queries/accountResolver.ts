@@ -1,7 +1,7 @@
 import { ProviderSource } from '../../types/ProviderSource'
 import { castToJsonRpcProvider } from '../../utils/castToJsonRpcProvider'
 
-const debug = require('debug')('pt:web3Resolvers')
+const debug = require('debug')('tightbeam:web3Resolvers')
 
 /**
  * Resolvers execute the behaviour when an Apollo query with the same name is run.

@@ -1,11 +1,12 @@
-import { allTransactionsQuery, transactionFragment } from '../../queries'
-import { gasCalculator } from '../../utils'
+import { allTransactionsQuery } from '../../queries'
 import { ContractCache } from '../../ContractCache'
-import { ethers } from 'ethers'
-import { watchTransaction } from '../../services'
+
+import { sendUncheckedTransaction } from '../../services'
+import { transactionFragment } from '../../queries'
 import { Transaction, TransactionParams } from '../../types/Transaction'
 import { ProviderSource } from '../../types/ProviderSource'
 import { castToJsonRpcProvider } from '../../utils/castToJsonRpcProvider'
+import { watchTransaction } from '../../services/watchTransaction'
 
 const debug = require('debug')('tightbeam:sendTransaction')
 
@@ -18,6 +19,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     fn,
     params,
     gasLimit,
+    gasPrice,
     value,
     scaleGasEstimate,
     minimumGas
@@ -27,7 +29,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
 
   const signer = provider.getSigner()
 
-  let contract = await contractCache.resolveContract({abi, address, name })
+  let contract = await contractCache.resolveContract({ abi, address, name })
   contract = contract.connect(signer)
   address = contract.address
 
@@ -35,12 +37,6 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
 
   if (!contract[fn]) {
     throw new Error(`Unknown function ${fn} for ${identifier}`)
-  }
-
-  if (value) {
-    value = ethers.utils.bigNumberify(value)
-  } else {
-    value = ethers.utils.bigNumberify('0')
   }
 
   let newTx = new Transaction()
@@ -57,8 +53,12 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     hash: null,
     error: null,
     blockNumber: null,
+    gasLimit: gasLimit ? gasLimit.toString() : null,
+    gasPrice: gasPrice ? gasPrice.toString() : null,
+    scaleGasEstimate: scaleGasEstimate ? scaleGasEstimate.toString() : null,
+    minimumGas: minimumGas ? minimumGas.toString() : null,
+    value: value ? value.toString() : null,
     params: new TransactionParams(Array.from(params).map(param => param.toString())),
-    value: value.toString()
   }
 
   const query = allTransactionsQuery
@@ -66,35 +66,18 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   data.transactions.push(newTx)
   cache.writeQuery({ query, data })
 
-  let estimatedGasLimit = await contract.estimate[fn](...params)
 
-  let selectedGasLimit = gasCalculator(gasLimit, estimatedGasLimit, scaleGasEstimate, minimumGas)
-  
-  const transactionData = contract.interface.functions[fn].encode(params)
 
-  const unsignedTransaction = {
-    data: transactionData,
-    to: contract.address,
-    gasLimit: selectedGasLimit,
-    value
-  }
 
-  debug(
-`Identifier: ${identifier}\n
-ContractAddress: ${address}\n
-ContractMethod: ${fn}\n
-ContractArgs: ${args}\n\n
-with gasLimit ${selectedGasLimit.toString()}\n\n
-unsignedTransaction: `, JSON.stringify(unsignedTransaction))
 
-  const id = `Transaction:${txId}`
-  const readTx = () => {
+  const id = `Transaction:${newTx.id}`
+  const readTx = (): Transaction => {
     return cache.readFragment({ fragment: transactionFragment, id })
   }
 
-  return await signer.sendUncheckedTransaction(unsignedTransaction)
-    .then(async function (hash) {
-      let transaction = readTx()
+  sendUncheckedTransaction(contractCache, providerSource, newTx)
+    .then(hash => {
+      const transaction = readTx()
       transaction.hash = hash
       transaction.sent = true
       cache.writeData({ id, data: transaction })
@@ -114,4 +97,6 @@ unsignedTransaction: `, JSON.stringify(unsignedTransaction))
 
       return transaction
     })
+
+  return newTx
 }
