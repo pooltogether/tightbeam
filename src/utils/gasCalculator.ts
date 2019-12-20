@@ -5,7 +5,7 @@ export function gasCalculator(
   estimatedGasLimit: ethers.utils.BigNumberish,
   scaleGasEstimate: ethers.utils.BigNumberish,
   minimumGas: ethers.utils.BigNumberish
-  ): ethers.utils.BigNumber {
+): ethers.utils.BigNumber {
 
   let result: ethers.utils.BigNumber
 

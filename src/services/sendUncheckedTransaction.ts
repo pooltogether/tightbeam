@@ -34,8 +34,8 @@ export async function sendUncheckedTransaction(
   contract = contract.connect(signer)
   address = contract.address
 
-  let estimatedGasLimit = await contract.estimate[tx.fn](...params.values)
-
+  // let estimatedGasLimit = await contract.estimate[tx.fn](...params.values)
+  let estimatedGasLimit = minimumGas
   let selectedGasLimit = gasCalculator(gasLimit, estimatedGasLimit, scaleGasEstimate, minimumGas)
 
   const transactionData = contract.interface.functions[fn].encode(params.values)
@@ -43,7 +43,7 @@ export async function sendUncheckedTransaction(
   const unsignedTransaction = {
     data: transactionData,
     to: contract.address,
-    gasLimit: selectedGasLimit,
+    gasLimit: selectedGasLimit
   }
 
   if (value) {

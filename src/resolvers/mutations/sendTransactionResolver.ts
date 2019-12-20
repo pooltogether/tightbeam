@@ -40,7 +40,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   }
 
   let newTx = new Transaction()
-
+  
   newTx = {
     ...newTx,
     id: txId,
@@ -70,7 +70,6 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
       transactions: data.transactions.concat([newTx])
     } 
   })
-
 
 
   const id = `Transaction:${newTx.id}`

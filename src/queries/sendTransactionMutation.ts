@@ -8,6 +8,7 @@ export const sendTransactionMutation = gql`
     $fn: String!,
     $params: Object!,
     $gasLimit: String,
+    $gasPrice: String,
     $scaleGasEstimate: String,
     $value: String,
     $minimumGas: String
@@ -19,6 +20,7 @@ export const sendTransactionMutation = gql`
       fn: $fn,
       params: $params,
       gasLimit: $gasLimit,
+      gasPrice: $gasPrice,
       value: $value,
       scaleGasEstimate: $scaleGasEstimate,
       minimumGas: $minimumGas
