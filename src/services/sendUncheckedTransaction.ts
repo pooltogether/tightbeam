@@ -60,12 +60,17 @@ export async function sendUncheckedTransaction(
     unsignedTransaction.gasPrice = ethers.utils.bigNumberify(gasPrice)
   }
 
+
+  let selectedGasLimitString
+  if (selectedGasLimit) {
+    selectedGasLimitString = selectedGasLimit.toString()
+  }
   debug(
     `ID: ${tx.id}\n
 ContractAddress: ${address}\n
 ContractMethod: ${fn}\n
 TransactionParams: `, JSON.stringify(params), `\n\n
-with gasLimit ${selectedGasLimit.toString()}\n\n
+with gasLimit ${selectedGasLimitString}\n\n
 unsignedTransaction: `, JSON.stringify(unsignedTransaction))
 
 
