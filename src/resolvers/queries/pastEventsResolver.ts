@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+
 import { ContractCache } from "../../ContractCache"
 import { buildFilter } from '../../services/buildFilter'
 import { ProviderSource } from "../../types/ProviderSource"
@@ -35,7 +36,9 @@ export async function pastEventsResolver(
     }
   )
 
-  const provider = await ethers.getDefaultProvider()
+  const provider = providerSource ?
+    await providerSource() :
+    await ethers.getDefaultProvider()
   // const provider = await providerSource()
 
   const logs = await provider.getLogs(filter)

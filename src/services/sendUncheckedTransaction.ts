@@ -34,8 +34,12 @@ export async function sendUncheckedTransaction(
   contract = contract.connect(signer)
   address = contract.address
 
-  // let estimatedGasLimit = await contract.estimate[tx.fn](...params.values)
-  let estimatedGasLimit = minimumGas
+  let estimatedGasLimit = null
+  try {
+    estimatedGasLimit = await contract.estimate[tx.fn](...params.values)
+  } catch (e) {
+    console.log(`Error while estimating gas: ${e}`)
+  }
   let selectedGasLimit = gasCalculator(gasLimit, estimatedGasLimit, scaleGasEstimate, minimumGas)
 
   const transactionData = contract.interface.functions[fn].encode(params.values)

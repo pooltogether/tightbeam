@@ -37,7 +37,7 @@ export function bindResolvers(tightbeam: Tightbeam) {
       pastEvents: function (opts, args, context, info) {
         return queries.pastEventsResolver(
           tightbeam.contractCache,
-          tightbeam.providerSource,
+          /* tightbeam.providerSource || */ null,
           tightbeam,
           opts,
           args,
