@@ -1,5 +1,4 @@
 import { callResolver } from '../callResolver'
-import { ContractCache } from '../../../ContractCache'
 
 describe('callResolver()', () => {
 
