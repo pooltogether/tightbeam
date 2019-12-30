@@ -1,5 +1,3 @@
-import { ethers } from 'ethers'
-
 const { pastEventsResolver } = require('../pastEventsResolver')
 
 jest.mock('../../../services/buildFilter')
@@ -11,16 +9,13 @@ describe('pastEventsResolver', () => {
   let contract,
     contractCache,
     provider,
-    getDefaultProvider,
     providerSource,
     logs,
-    config
+    defaultFromBlock
 
   beforeEach(async () => {
     logs = ['log1']
-    config = {
-      defaultFromBlock: 10
-    }
+    defaultFromBlock = 10
     provider = {
       getLogs: jest.fn(() => logs)
     }
@@ -33,7 +28,7 @@ describe('pastEventsResolver', () => {
     contractCache = {
       resolveContract: jest.fn(() => contract)
     }
-    getDefaultProvider = jest.fn(() => 
+    providerSource = jest.fn(() => 
       Promise.resolve(provider)
     )
   })
@@ -45,11 +40,10 @@ describe('pastEventsResolver', () => {
       address: '0x1234'
     }
 
-    const providerSource = getDefaultProvider
     const pastEvents = await pastEventsResolver(
       contractCache,
       providerSource,
-      config,
+      defaultFromBlock,
       {},
       filter
     )
