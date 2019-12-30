@@ -8,7 +8,7 @@ import { Tightbeam } from '../Tightbeam'
  */
 export function bindResolvers(tightbeam: Tightbeam) {
   return {
-    Query: bindQueryResolvers(tightbeam.contractCache, tightbeam.providerSource, tightbeam.defaultFromBlock),
-    Mutation: bindMutationResolvers(tightbeam.mutationContractCache, tightbeam.mutationProviderSource)
+    Query: bindQueryResolvers(tightbeam.contractCache, tightbeam.providerSource, tightbeam.txProviderSource, tightbeam.defaultFromBlock),
+    Mutation: bindMutationResolvers(tightbeam.txContractCache, tightbeam.txProviderSource)
   }
 }

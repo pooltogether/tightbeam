@@ -7,10 +7,10 @@ import { ProviderSource } from '../types'
  * @param tightbeam The Tightbeam object
  * @returns A map of the query resolvers.
  */
-export function bindQueryResolvers(contractCache: ContractCache, providerSource: ProviderSource, defaultFromBlock: number) {
+export function bindQueryResolvers(contractCache: ContractCache, providerSource: ProviderSource, txProviderSource: ProviderSource, defaultFromBlock: number) {
   return {
     account: function () {
-      return queries.accountResolver(providerSource) 
+      return queries.accountResolver(txProviderSource) 
     },
     block: function (opts, args, context, info) {
       return queries.blockResolver(

@@ -7,36 +7,37 @@ jest.mock('../mutations/sendTransactionResolver')
 
 describe('bindQueryResolvers', () => {
 
-  let contractCache, providerSource, defaultFromBlock
+  let contractCache, providerSource, txProviderSource, defaultFromBlock
 
   beforeEach(() => {
       providerSource = 'providerSource'
+      txProviderSource = 'txProviderSource'
       contractCache = 'contractCache'
       defaultFromBlock = 'defaultFromBlock'
   })
 
   it('should bind account', () => {
-    bindQueryResolvers(contractCache, providerSource, defaultFromBlock).account('a', 'b', 'c', 'd')
-    expect(queries.accountResolver).toHaveBeenCalledWith('providerSource')
+    bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).account('a', 'b', 'c', 'd')
+    expect(queries.accountResolver).toHaveBeenCalledWith('txProviderSource')
   })
 
   it('should bind block', () => {
-    bindQueryResolvers(contractCache, providerSource, defaultFromBlock).block('a', 'b', 'c', 'd')
+    bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).block('a', 'b', 'c', 'd')
     expect(queries.blockResolver).toHaveBeenCalledWith('providerSource', 'a', 'b', 'c', 'd')
   })
 
   it('should bind call', () => {
-    bindQueryResolvers(contractCache, providerSource, defaultFromBlock).call('a', 'b', 'c', 'd')
+    bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).call('a', 'b', 'c', 'd')
     expect(queries.callResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 'a', 'b', 'c', 'd')
   })
 
   it('should bind network', () => {
-    bindQueryResolvers(contractCache, providerSource, defaultFromBlock).network('a', 'b', 'c', 'd')
+    bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).network('a', 'b', 'c', 'd')
     expect(queries.networkResolver).toHaveBeenCalledWith('providerSource')
   })
 
   it('should bind pastEvents', () => {
-    bindQueryResolvers(contractCache, providerSource, defaultFromBlock).pastEvents('a', 'b', 'c', 'd')
+    bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).pastEvents('a', 'b', 'c', 'd')
     expect(queries.pastEventsResolver).toHaveBeenCalledWith(
       "contractCache",
       "providerSource",

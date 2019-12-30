@@ -6,12 +6,12 @@ import { sendTransactionResolver } from './mutations'
  * 
  * @param tightbeam The Tightbeam object
  */
-export function bindMutationResolvers(contractCache: ContractCache, providerSource: ProviderSource) {
+export function bindMutationResolvers(contractCache: ContractCache, txProviderSource: ProviderSource) {
   let nextTxId = 1
 
   return {
     sendTransaction: function (opts, args, context, info) {
-      return sendTransactionResolver(contractCache, providerSource, nextTxId++, opts, args, context, info)
+      return sendTransactionResolver(contractCache, txProviderSource, nextTxId++, opts, args, context, info)
     }
   }
 }
