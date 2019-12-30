@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/tightbeam",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Ethers.js bindings for Apollo Client",
   "main": "index.js",
   "browser": "index.js",
