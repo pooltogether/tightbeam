@@ -156,6 +156,23 @@ describe('sendTransactionResolver', () => {
     expect(cached.value).toEqual('12')
   })
 
+  it('should accept null params', async () => {
+    const transaction = await sendTransactionResolver(
+      contractCache,
+      providerSource,
+      1,
+      {},
+      {
+        name: 'Dai',
+        fn: 'callMe',
+        params: null
+      },
+      { cache },
+      {}
+    )
+    expect(transaction.params).toEqual({ "__typename": "JSON", "values": [] })
+  })
+
   it('should accept an abi', async () => {
     const transaction = await sendTransactionResolver(contractCache,
       providerSource,
