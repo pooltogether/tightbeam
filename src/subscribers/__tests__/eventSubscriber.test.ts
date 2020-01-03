@@ -1,8 +1,14 @@
-import { eventSubscriber } from '../eventSubscriber'
+export {}
+
+const { buildFilter } = require('../../services/buildFilter')
+const { eventSubscriber } = require('../eventSubscriber')
+
+jest.mock('../../services/buildFilter')
 
 describe('eventSubscriber', () => {
 
-  let contract, contractCache, provider, providerSource, defaultFromBlock
+  let contract, contractCache, logsObserver, observer, filter
+  let next
 
   beforeEach(() => {
     contract = {
@@ -14,46 +20,122 @@ describe('eventSubscriber', () => {
     contractCache = {
       resolveContract: jest.fn(() => contract)
     }
-    provider = {
-      on: jest.fn(),
-      removeListener: jest.fn()
+    filter = {
+      address: '0xabcd',
+      topics: []
     }
-    providerSource = jest.fn(() => Promise.resolve(provider))
-    defaultFromBlock = 0
+    logsObserver = {
+      subscribe: jest.fn((o) => {
+        observer = o
+        return 'unsubscribe'
+      })
+    }
+    next = jest.fn()
+    buildFilter.mockImplementation(() => filter)
   })
 
-  it('should build the filter and attach to the provider', async () => {
-    const subscriber = await eventSubscriber(contractCache, providerSource, defaultFromBlock, { name: 'Dai' })
+  it('should call resolveContract, build filter, then subscribe ', async () => {
+    const subscriber = await eventSubscriber(contractCache, logsObserver, { name: 'Dai' })
+    subscriber.subscribe(next)
 
-    let next = jest.fn()
-    let subscription = subscriber.subscribe(next)
+    expect(contractCache.resolveContract).toHaveBeenCalledWith(expect.objectContaining({ name: 'Dai' }))
 
-    // expect that we attached to the Ethers provider event
-    expect(provider.on).toHaveBeenCalledWith(
-      expect.objectContaining({address: '0x1234'}),
-      expect.any(Function)
+    expect(buildFilter).toHaveBeenCalledWith(
+      '0x1234',
+      contract.interface,
+      {
+        name: 'Dai'
+      }
     )
 
-    // extract the callback that was created
-    const subscriptionCb = provider.on.mock.calls[0][1]
-    expect(subscriptionCb).toBeInstanceOf(Function)
+    expect(logsObserver.subscribe).toHaveBeenCalledTimes(1)
+    expect(observer).toBeDefined()
+  })
 
-    // fake an event
-    subscriptionCb('log')
+  it('should ignore logs with incorrect addresses', async () => {
+    const subscriber = await eventSubscriber(contractCache, logsObserver, { name: 'Dai' })
+    subscriber.subscribe(next)
 
-    // Ensure that our subscriber was called
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      log: 'log',
-      event: 'parsedLog'
-    }))
+    // defined by the circuitous logsObserver.subscribe
+    observer([
+      {
+        address: '0xabcd',
+        topics: []
+      }
+    ])
 
-    // Ensure that we can unsubscribe
-    subscription.unsubscribe()
+    expect(next).not.toHaveBeenCalled()
+  })
 
-    // the provider should have removed the listener
-    expect(provider.removeListener).toHaveBeenCalledWith(
-      expect.objectContaining({address: '0x1234'}),
-      subscriptionCb
-    )
+  it('should call next for logs with matching addresses', async () => {
+    filter = {
+      address: '0x1234',
+      topics: [null]
+    }
+
+    const subscriber = await eventSubscriber(contractCache, logsObserver, { name: 'Dai' })
+    subscriber.subscribe(next)
+
+    const matchingLog = {
+      address: '0x1234',
+      topics: []
+    }
+
+    // defined by the circuitous logsObserver.subscribe
+    observer([
+      matchingLog  
+    ])
+
+    expect(next).toHaveBeenCalledWith({
+      event: 'parsedLog',
+      log: matchingLog
+    })
+  })
+
+  it('should not call next for logs with mismatched topics', async () => {
+    filter = {
+      address: '0x1234',
+      topics: ['i am a specific fn']
+    }
+
+    const subscriber = await eventSubscriber(contractCache, logsObserver, { name: 'Dai' })
+    subscriber.subscribe(next)
+
+    const matchingLog = {
+      address: '0x1234',
+      topics: []
+    }
+
+    // defined by the circuitous logsObserver.subscribe
+    observer([
+      matchingLog  
+    ])
+
+    expect(next).not.toHaveBeenCalled()
+  })
+
+  it('should call next for logs with matching topics', async () => {
+    filter = {
+      address: '0x1234',
+      topics: ['i am a specific fn', undefined]
+    }
+
+    const subscriber = await eventSubscriber(contractCache, logsObserver, { name: 'Dai' })
+    subscriber.subscribe(next)
+
+    const matchingLog = {
+      address: '0x1234',
+      topics: ['i am a specific fn']
+    }
+
+    // defined by the circuitous logsObserver.subscribe
+    observer([
+      matchingLog  
+    ])
+
+    expect(next).toHaveBeenCalledWith({
+      event: 'parsedLog',
+      log: matchingLog
+    })
   })
 })

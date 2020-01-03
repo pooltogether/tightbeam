@@ -24,7 +24,9 @@ import { ProviderSource } from './types/ProviderSource'
 import { ethers } from 'ethers'
 import { bindResolvers } from './resolvers/bindResolvers'
 import { EventFilter } from './types'
-import { eventSubscriber } from './subscribers'
+import { eventSubscriber, EventSubscriptionManager, BlockSubscriptionManager } from './subscribers'
+import Observable from 'zen-observable-ts'
+import { Log } from 'ethers/providers'
 
 const merge = require('lodash.merge')
 
@@ -43,6 +45,13 @@ export class Tightbeam {
   public txProviderSource: ProviderSource
   public defaultFromBlock: number
 
+  private blockSubscriptionManager: BlockSubscriptionManager
+  private eventSubscriptionManager: EventSubscriptionManager
+
+  private logsSubscriber: Observable<Array<Log>>
+
+  private subscribersReady: Promise<void>
+
   constructor (
     options?: TightbeamOptions
   ) {
@@ -58,6 +67,8 @@ export class Tightbeam {
     this.defaultFromBlock = defaultFromBlock || 0
     this.contractCache = new ContractCache(this.abiMapping, this.providerSource)
     this.txContractCache = new ContractCache(this.abiMapping, this.txProviderSource)
+    this.blockSubscriptionManager = new BlockSubscriptionManager(this.providerSource)
+    this.eventSubscriptionManager = new EventSubscriptionManager(this.providerSource, this.blockSubscriptionManager)
   }
 
   resolvers (clientResolvers = {}) {
@@ -65,7 +76,22 @@ export class Tightbeam {
   }
 
   async subscribeEvent (eventFilter: EventFilter) {
-    return await eventSubscriber(this.contractCache, this.providerSource, this.defaultFromBlock, eventFilter)      
+    await this.startSubscribers()
+    return await eventSubscriber(this.contractCache, this.logsSubscriber, eventFilter)
+  }
+
+  async startSubscribers() {
+    if (!this.subscribersReady) {
+      this.subscribersReady = new Promise((resolve, reject) => {
+        const setup = async () => {
+          this.blockSubscriptionManager.start()
+          this.eventSubscriptionManager.start()
+          this.logsSubscriber = await this.eventSubscriptionManager.subscribe()
+        }
+        setup().then(resolve).catch(reject)
+      })
+    }
+    return await this.subscribersReady
   }
 
   bindResolvers () {

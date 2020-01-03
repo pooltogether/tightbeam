@@ -87,7 +87,7 @@ describe('Tightbeam', () => {
 
       await tb.subscribeEvent('test')
 
-      expect(eventSubscriber).toHaveBeenCalledWith(tb.contractCache, tb.providerSource, tb.defaultFromBlock, 'test')
+      expect(eventSubscriber).toHaveBeenCalledWith(tb.contractCache, expect.anything(), 'test')
     })
   })
 })
