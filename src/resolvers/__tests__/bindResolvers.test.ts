@@ -1,56 +1,36 @@
-const { bindResolvers } = require('../bindResolvers')
+// Weird empty export because of:
+// https://medium.com/@muravitskiy.mail/cannot-redeclare-block-scoped-variable-varname-how-to-fix-b1c3d9cc8206
+export {};
 
-const queries = require('../queries')
+const { bindMutationResolvers } = require('../bindMutationResolvers')
+const mutations = require('../mutations')
 
-jest.mock('../queries')
-jest.mock('../mutations/sendTransactionResolver')
+jest.mock('../mutations')
 
-describe('bindResolvers', () => {
+describe('bindMutationResolvers', () => {
 
-  let tightbeam
+  let mutationResolvers
 
   beforeEach(() => {
-    tightbeam = {
-      providerSource: 'providerSource',
-      contractCache: 'contractCache',
-      abiMapping: 'abiMapping'
-    }
+    mutationResolvers = bindMutationResolvers('contractCache', 'providerSource')
   })
 
-  it('should bind account', () => {
-    bindResolvers(tightbeam).Query.account('a', 'b', 'c', 'd')
-    expect(queries.accountResolver).toHaveBeenCalledWith('providerSource')
-  })
+  describe('sendTransaction', () => {
+    it('should build a function that proxies calls and iterates', () => {
+      mutationResolvers.sendTransaction('opts', 'args', 'context', 'info')
+      expect(mutations.sendTransactionResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 1, 'opts', 'args', 'context', 'info')
+  
+      mutationResolvers.sendTransaction('opts', 'args', 'context', 'info')
+      expect(mutations.sendTransactionResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 2, 'opts', 'args', 'context', 'info')
+    })
 
-  it('should bind block', () => {
-    bindResolvers(tightbeam).Query.block('a', 'b', 'c', 'd')
-    expect(queries.blockResolver).toHaveBeenCalledWith('providerSource', 'a', 'b', 'c', 'd')
-  })
+    it('should not be affected by another instance', () => {
+      const mr2 = bindMutationResolvers('contractCache', 'providerSource')
+      mr2.sendTransaction('opts', 'args', 'context', 'info')
+      expect(mutations.sendTransactionResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 1, 'opts', 'args', 'context', 'info')
 
-  it('should bind call', () => {
-    bindResolvers(tightbeam).Query.call('a', 'b', 'c', 'd')
-    expect(queries.callResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 'a', 'b', 'c', 'd')
-  })
-
-  it('should bind network', () => {
-    bindResolvers(tightbeam).Query.network('a', 'b', 'c', 'd')
-    expect(queries.networkResolver).toHaveBeenCalledWith('providerSource')
-  })
-
-  it('should bind pastEvents', () => {
-    bindResolvers(tightbeam).Query.pastEvents('a', 'b', 'c', 'd')
-    expect(queries.pastEventsResolver).toHaveBeenCalledWith(
-      'contractCache',
-      'providerSource',
-      {
-        "abiMapping": "abiMapping",
-        "contractCache": "contractCache",
-        "providerSource": "providerSource"
-      },
-      'a',
-      'b',
-      'c',
-      'd'
-    )
+      mutationResolvers.sendTransaction('opts', 'args', 'context', 'info')
+      expect(mutations.sendTransactionResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 1, 'opts', 'args', 'context', 'info')
+    })
   })
 })

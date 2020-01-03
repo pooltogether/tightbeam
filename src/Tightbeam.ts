@@ -31,13 +31,16 @@ const merge = require('lodash.merge')
 export interface TightbeamOptions {
   abiMapping?: AbiMapping
   providerSource?: ProviderSource,
+  txProviderSource?: ProviderSource,
   defaultFromBlock?: number
 }
 
 export class Tightbeam {
   public contractCache: ContractCache
+  public txContractCache: ContractCache
   public abiMapping: AbiMapping
   public providerSource: ProviderSource
+  public txProviderSource: ProviderSource
   public defaultFromBlock: number
 
   constructor (
@@ -45,13 +48,16 @@ export class Tightbeam {
   ) {
     const { 
       providerSource,
+      txProviderSource,
       abiMapping,
       defaultFromBlock
     } = options || {}
     this.providerSource = providerSource || (async () => ethers.getDefaultProvider())
+    this.txProviderSource = txProviderSource || this.providerSource
     this.abiMapping = abiMapping || new AbiMapping()
     this.defaultFromBlock = defaultFromBlock || 0
     this.contractCache = new ContractCache(this.abiMapping, this.providerSource)
+    this.txContractCache = new ContractCache(this.abiMapping, this.txProviderSource)
   }
 
   resolvers (clientResolvers = {}) {

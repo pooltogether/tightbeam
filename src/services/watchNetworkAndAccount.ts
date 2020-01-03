@@ -12,20 +12,20 @@ export function watchNetworkAndAccount (apolloClient) {
   // If the user signs in to MetaMask or logs out, we should ... (refresh the page?)
   apolloClient.watchQuery({
     query: accountQuery,
-    pollInterval: 2000,
+    pollInterval: 3000,
     fetchPolicy: 'network-only'
   }).subscribe()
 
   // This subscription listens for changes to a web3 browser (ie metamask's) network
   apolloClient.watchQuery({
     query: networkIdQuery,
-    pollInterval: 2000,
+    pollInterval: 3000,
     fetchPolicy: 'network-only'
   }).subscribe()
 
   apolloClient.watchQuery({
     query: ethereumPermissionQuery,
-    pollInterval: 1000,
+    pollInterval: 3000,
     fetchPolicy: 'network-only'
   }).subscribe()
 }

@@ -34,8 +34,12 @@ export async function sendUncheckedTransaction(
   contract = contract.connect(signer)
   address = contract.address
 
-  let estimatedGasLimit = await contract.estimate[tx.fn](...params.values)
-
+  let estimatedGasLimit = null
+  try {
+    estimatedGasLimit = await contract.estimate[tx.fn](...params.values)
+  } catch (e) {
+    console.log(`Error while estimating gas: ${e}`)
+  }
   let selectedGasLimit = gasCalculator(gasLimit, estimatedGasLimit, scaleGasEstimate, minimumGas)
 
   const transactionData = contract.interface.functions[fn].encode(params.values)
@@ -43,7 +47,7 @@ export async function sendUncheckedTransaction(
   const unsignedTransaction = {
     data: transactionData,
     to: contract.address,
-    gasLimit: selectedGasLimit,
+    gasLimit: selectedGasLimit
   }
 
   if (value) {
@@ -56,12 +60,17 @@ export async function sendUncheckedTransaction(
     unsignedTransaction.gasPrice = ethers.utils.bigNumberify(gasPrice)
   }
 
+
+  let selectedGasLimitString
+  if (selectedGasLimit) {
+    selectedGasLimitString = selectedGasLimit.toString()
+  }
   debug(
     `ID: ${tx.id}\n
 ContractAddress: ${address}\n
 ContractMethod: ${fn}\n
 TransactionParams: `, JSON.stringify(params), `\n\n
-with gasLimit ${selectedGasLimit.toString()}\n\n
+with gasLimit ${selectedGasLimitString}\n\n
 unsignedTransaction: `, JSON.stringify(unsignedTransaction))
 
 

@@ -84,7 +84,7 @@ describe('sendTransactionResolver', () => {
       {
         name: 'Dai',
         fn: 'badFn',
-        params: [1, "hello"]
+        params: [1, "hey there"]
       },
       { cache },
       {}
@@ -104,7 +104,7 @@ describe('sendTransactionResolver', () => {
         gasLimit: ethers.utils.bigNumberify('24'),
         scaleGasEstimate: ethers.utils.bigNumberify('36'),
         minimumGas: ethers.utils.bigNumberify('48'),
-        params: [1, "hello"]
+        params: [1, "yo"]
       },
       { cache },
       {}
@@ -127,7 +127,7 @@ describe('sendTransactionResolver', () => {
       error: null,
       blockNumber: null,
       params: {
-        values: ['1', 'hello'],
+        values: ['1', 'yo'],
         __typename: 'JSON'
       },
       value: null
@@ -165,7 +165,7 @@ describe('sendTransactionResolver', () => {
         abi: 'ERC20',
         address: '0xabcd',
         fn: 'callMe',
-        params: [1, "hello"],
+        params: [1, "what's up"],
         value: ethers.utils.bigNumberify('12')
       },
       { cache },
@@ -183,7 +183,7 @@ describe('sendTransactionResolver', () => {
       {
         name: 'Dai',
         fn: 'callMe',
-        params: [1, "hello"],
+        params: [1, "g'day"],
         value: ethers.utils.bigNumberify('12')
       },
       { cache },
@@ -210,7 +210,7 @@ describe('sendTransactionResolver', () => {
       {
         name: 'Dai',
         fn: 'callMe',
-        params: [1, "hello"],
+        params: [1, "oi!"],
         value: ethers.utils.bigNumberify('12')
       },
       { cache },

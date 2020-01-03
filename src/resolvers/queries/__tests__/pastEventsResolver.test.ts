@@ -6,13 +6,16 @@ const { buildFilter } = require('../../../services/buildFilter')
 
 describe('pastEventsResolver', () => {
 
-  let contract, contractCache, provider, providerSource, logs, config
+  let contract,
+    contractCache,
+    provider,
+    providerSource,
+    logs,
+    defaultFromBlock
 
   beforeEach(async () => {
     logs = ['log1']
-    config = {
-      defaultFromBlock: 10
-    }
+    defaultFromBlock = 10
     provider = {
       getLogs: jest.fn(() => logs)
     }
@@ -25,7 +28,9 @@ describe('pastEventsResolver', () => {
     contractCache = {
       resolveContract: jest.fn(() => contract)
     }
-    providerSource = jest.fn(() => Promise.resolve(provider))
+    providerSource = jest.fn(() => 
+      Promise.resolve(provider)
+    )
   })
 
   it('should work', async () => {
@@ -35,7 +40,13 @@ describe('pastEventsResolver', () => {
       address: '0x1234'
     }
 
-    const pastEvents = await pastEventsResolver(contractCache, providerSource, config, {}, filter)
+    const pastEvents = await pastEventsResolver(
+      contractCache,
+      providerSource,
+      defaultFromBlock,
+      {},
+      filter
+    )
 
     expect(pastEvents).toEqual([
       {
