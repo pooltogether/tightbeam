@@ -39,6 +39,10 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     throw new Error(`Unknown function ${fn} for ${identifier}`)
   }
 
+  if (!params) {
+    params = []
+  }
+
   let newTx = new Transaction()
   
   newTx = {
