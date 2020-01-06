@@ -13,7 +13,6 @@ export async function eventSubscriber(
   eventFilter: EventFilter
 ): Promise<Observable<LogEvent>> {
   
-  debug(eventFilter)
 
   const contract = await contractCache.resolveContract({
     abi: eventFilter.abi,
@@ -27,13 +26,15 @@ export async function eventSubscriber(
     eventFilter
   )
 
+  debug(eventFilter, filter)
+
   return new Observable<LogEvent>(observer => {
     const unsubscribe = logsObserver.subscribe((logs) => {
       for (let i = 0; i < logs.length; i++) {
         const log = logs[i]
+        
+        const addressMatch = !filter.address || filter.address.toLowerCase() === log.address.toLowerCase()
 
-
-        const addressMatch = !contract.address || contract.address == log.address
         if (!addressMatch) {
           continue
         }

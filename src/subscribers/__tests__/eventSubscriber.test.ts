@@ -21,7 +21,7 @@ describe('eventSubscriber', () => {
       resolveContract: jest.fn(() => contract)
     }
     filter = {
-      address: '0xabcd',
+      address: '0xabcde',
       topics: []
     }
     logsObserver = {
@@ -69,7 +69,7 @@ describe('eventSubscriber', () => {
 
   it('should call next for logs with matching addresses', async () => {
     filter = {
-      address: '0x1234',
+      address: '0x1234ABcd',
       topics: [null]
     }
 
@@ -77,7 +77,7 @@ describe('eventSubscriber', () => {
     subscriber.subscribe(next)
 
     const matchingLog = {
-      address: '0x1234',
+      address: '0x1234abCD',
       topics: []
     }
 
