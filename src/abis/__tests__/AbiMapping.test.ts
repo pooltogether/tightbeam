@@ -39,7 +39,7 @@ describe('AbiMapping', () => {
 
   describe('addContract()', () => {
     it('should require name', () => {
-      expect(() => mapping.addContract(null, 1234, '0xabcd', abi)).toThrow(/name not defined/)
+      expect(() => mapping.addContract(null, 1234, '0x0CcCC7507aEDf9FEaF8C8D731421746e16b4d39D', abi)).toThrow(/name not defined/)
     })
 
     it('should require address', () => {
@@ -47,44 +47,44 @@ describe('AbiMapping', () => {
     })
 
     it('should require networkId', () => {
-      expect(() => mapping.addContract('hello', null, '0xabcd', abi)).toThrow(/networkId not defined/)
+      expect(() => mapping.addContract('hello', null, '0x0CcCC7507aEDf9FEaF8C8D731421746e16b4d39D', abi)).toThrow(/networkId not defined/)
     })
 
     it('should require abi', () => {
-      expect(() => mapping.addContract('hello', 1234, '0xabcd', null)).toThrow(/abi not defined/)
+      expect(() => mapping.addContract('hello', 1234, '0x0CcCC7507aEDf9FEaF8C8D731421746e16b4d39D', null)).toThrow(/abi not defined/)
     })
 
     it('should work', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
-      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0xabcde')
+      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e')
     })
 
     it('should override', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
-      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0xabcde')
+      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e')
 
-      mapping.addContract('Vouching', 1234, '0xffff', [])
-      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0xffff')
+      mapping.addContract('Vouching', 1234, '0x51f595Ef681C3B3B6B6949FBbB36b7D98DAa15Bf', [])
+      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0x51f595Ef681C3B3B6B6949FBbB36b7D98DAa15Bf')
     })
   })
 
   describe('getContractAbiDefinitionByAddress()', () => {
     it('should work', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
-      expect(mapping.getContractAbiDefinitionByAddress('0xabcde', 1234)).toEqual(abiDef)
+      expect(mapping.getContractAbiDefinitionByAddress('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', 1234)).toEqual(abiDef)
     })
 
     it('should accept a bad address', () => {
-      expect(mapping.getContractAbiDefinitionByAddress('0xabcde', 1234)).toEqual(undefined)
+      expect(mapping.getContractAbiDefinitionByAddress('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', 1234)).toEqual(undefined)
     })
 
     it('should accept a bad networkId', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
-      expect(mapping.getContractAbiDefinitionByAddress('0xabcde', 99)).toEqual(undefined)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
+      expect(mapping.getContractAbiDefinitionByAddress('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', 99)).toEqual(undefined)
     })
   })
 
@@ -94,13 +94,13 @@ describe('AbiMapping', () => {
     })
 
     it('should do nothing when the network id is wrong', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
       expect(mapping.getContractAbiDefinitionByName('Vouching', 1)).toEqual(undefined)
     })
 
     it('should work', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
       expect(mapping.getContractAbiDefinitionByName('Vouching', 1234)).toEqual(abiDef)
     })
@@ -112,14 +112,14 @@ describe('AbiMapping', () => {
     })
 
     it('should do nothing when the network id is wrong', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
       expect(mapping.getContractAddress('Vouching', 1)).toEqual(undefined)
     })
 
     it('should work', () => {
-      mapping.addContract('Vouching', 1234, '0xabcde', abi)
-      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0xabcde')
+      mapping.addContract('Vouching', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
+      expect(mapping.getContractAddress('Vouching', 1234)).toEqual('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e')
     })
   })
 

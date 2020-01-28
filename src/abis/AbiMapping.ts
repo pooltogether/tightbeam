@@ -1,5 +1,7 @@
 import { AbiDefinition } from './AbiDefinition'
 
+import { normalizeAddress } from '../utils/normalizeAddress'
+
 const debug = require('debug')('tightbeam:AbiMapping')
 
 export class AbiMapping {
@@ -27,6 +29,8 @@ export class AbiMapping {
     if (!networkId) throw 'networkId not defined'
     if (!address) throw 'address not defined'
     if (!abi) throw 'abi not defined'
+
+    address = normalizeAddress(address)
 
     if (!this.nameToAddressMapping[name]) {
       this.nameToAddressMapping[name] = {}
@@ -63,6 +67,8 @@ export class AbiMapping {
   }
 
   getContractAbiDefinitionByAddress(address: string, networkId: Number): AbiDefinition {
+    address = normalizeAddress(address)
+
     const mapping = this.addressToAbiMapping[address]
     let result
     if (mapping) {

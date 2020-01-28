@@ -66,7 +66,7 @@ describe('ContractCache', () => {
 
   beforeEach(async () => {
     abiMapping = new AbiMapping()
-    abiMapping.addContract('Foo', 1234, '0xabcd', abi)
+    abiMapping.addContract('Foo', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
 
     let provider = {
       getNetwork: jest.fn(() => Promise.resolve({ chainId: 1234 }))
@@ -111,7 +111,7 @@ describe('ContractCache', () => {
 
   describe('getContractByAddress()', () => {
     it('should retrieve a contract', async () => {
-      const result = await cache.getContractByAddress('0xabcd')
+      const result = await cache.getContractByAddress('0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e')
       expect(result).toBeInstanceOf(ethers.Contract)
     })
 
@@ -120,7 +120,7 @@ describe('ContractCache', () => {
     })
 
     it('should fail if the contract does not exist', async () => {
-      await expect(cache.getContractByAddress('0x1234')).rejects.toEqual(new Error('Could not find contract for address 0x1234 and chain id 1234'))
+      await expect(cache.getContractByAddress('0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6')).rejects.toEqual(new Error('Could not find contract for address 0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6 and chain id 1234'))
     })
   })
 
@@ -146,7 +146,7 @@ describe('ContractCache', () => {
   describe('resolveContract()', () => {
     beforeEach(() => {
       abiMapping.addAbi('Hello', abi2)
-      abiMapping.addContract('Hello', 1234, '0xabcd', abi)
+      abiMapping.addContract('Hello', 1234, '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e', abi)
     })
 
     it('should fail when no params are passed', async () => {
@@ -155,7 +155,7 @@ describe('ContractCache', () => {
 
     describe('when passing an abi', () => {
       it('should use the abi first', async () => {
-        const result = await cache.resolveContract({ abi: 'Hello', name: 'Hello', address: '0x1234' })
+        const result = await cache.resolveContract({ abi: 'Hello', name: 'Hello', address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6' })
   
         expect(result).toBeInstanceOf(ethers.Contract)
       })
@@ -176,7 +176,7 @@ describe('ContractCache', () => {
 
     describe('when passing an address', () => {
       it('should use the abi first', async () => {
-        const result = await cache.resolveContract({ address: '0xabcd' })
+        const result = await cache.resolveContract({ address: '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e' })
   
         expect(result).toBeInstanceOf(ethers.Contract)
       })

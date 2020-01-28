@@ -1,6 +1,8 @@
-import { AbiMapping } from './abis/AbiMapping'
 import { ethers } from 'ethers'
+
+import { AbiMapping } from './abis/AbiMapping'
 import { ProviderSource } from './types/ProviderSource'
+import { normalizeAddress } from './utils/normalizeAddress'
 
 const debug = require('debug')('tightbeam:ContractCache')
 
@@ -62,6 +64,8 @@ export class ContractCache {
       this.contractCache[chainId] = {}
     }
 
+    address = normalizeAddress(address)
+
     let contract = this.contractCache[chainId][address]
     if (!contract) {
       const abiDef = this.abiMapping.getContractAbiDefinitionByAddress(address, chainId)
@@ -96,6 +100,9 @@ export class ContractCache {
   async resolveContract({ abi, address, name }): Promise<ethers.Contract> {
     let contract: ethers.Contract
     const provider = await this.providerSource()
+
+    address = normalizeAddress(address)
+
     if (abi) {
       let ethersInterface = await this.getAbiInterfaceByName(abi)
       if (!address) {
