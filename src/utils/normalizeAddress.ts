@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { ethers } from 'ethers'
 
 export function normalizeAddress(
   address: string
@@ -8,7 +8,7 @@ export function normalizeAddress(
       address = ethers.utils.getAddress(address)
     }
   } catch (e) {
-    throw new Error(`Unable to normalize address: ${address}`)
+    throw new Error(`Unable to normalize address: ${address}: ${e.message}`)
   }
 
   return address

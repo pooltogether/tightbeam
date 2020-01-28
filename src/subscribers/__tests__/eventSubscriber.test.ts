@@ -12,7 +12,7 @@ describe('eventSubscriber', () => {
 
   beforeEach(() => {
     contract = {
-      address: '0x1234',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6',
       interface: {
         parseLog: jest.fn(() => 'parsedLog')
       }
@@ -21,7 +21,7 @@ describe('eventSubscriber', () => {
       resolveContract: jest.fn(() => contract)
     }
     filter = {
-      address: '0xabcde',
+      address: '0x8f7F92e0660DD92ecA1faD5F285C4Dca556E433e',
       topics: []
     }
     logsObserver = {
@@ -41,7 +41,7 @@ describe('eventSubscriber', () => {
     expect(contractCache.resolveContract).toHaveBeenCalledWith(expect.objectContaining({ name: 'Dai' }))
 
     expect(buildFilter).toHaveBeenCalledWith(
-      '0x1234',
+      '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6',
       contract.interface,
       {
         name: 'Dai'
@@ -59,7 +59,7 @@ describe('eventSubscriber', () => {
     // defined by the circuitous logsObserver.subscribe
     observer([
       {
-        address: '0xabcd',
+        address: '0x0CcCC7507aEDf9FEaF8C8D731421746e16b4d39D',
         topics: []
       }
     ])
@@ -69,7 +69,7 @@ describe('eventSubscriber', () => {
 
   it('should call next for logs with matching addresses', async () => {
     filter = {
-      address: '0x1234ABcd',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44A6',
       topics: [null]
     }
 
@@ -77,7 +77,7 @@ describe('eventSubscriber', () => {
     subscriber.subscribe(next)
 
     const matchingLog = {
-      address: '0x1234abCD',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643CEd44a6',
       topics: []
     }
 
@@ -94,7 +94,7 @@ describe('eventSubscriber', () => {
 
   it('should not call next for logs with mismatched topics', async () => {
     filter = {
-      address: '0x1234',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6',
       topics: ['i am a specific fn']
     }
 
@@ -102,7 +102,7 @@ describe('eventSubscriber', () => {
     subscriber.subscribe(next)
 
     const matchingLog = {
-      address: '0x1234',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6',
       topics: []
     }
 
@@ -116,7 +116,7 @@ describe('eventSubscriber', () => {
 
   it('should call next for logs with matching topics', async () => {
     filter = {
-      address: '0x1234',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6',
       topics: ['i am a specific fn', undefined]
     }
 
@@ -124,7 +124,7 @@ describe('eventSubscriber', () => {
     subscriber.subscribe(next)
 
     const matchingLog = {
-      address: '0x1234',
+      address: '0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6',
       topics: ['i am a specific fn']
     }
 
