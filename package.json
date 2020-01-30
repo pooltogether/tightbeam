@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/tightbeam",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Ethers.js bindings for Apollo Client",
   "main": "index.js",
   "browser": "index.js",
@@ -15,7 +15,9 @@
     "watch": "rollup -w -c rollup.config.js",
     "coverage": "jest --coverage --coverageReporters html",
     "test-watch": "jest --watchAll",
-    "docs": "typedoc src"
+    "docs": "typedoc src",
+    "prepack": "yarn dist",
+    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
   },
   "directories": {
     "lib": "dist",

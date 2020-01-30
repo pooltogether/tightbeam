@@ -3,8 +3,20 @@ import { ethers } from 'ethers'
 import { AbiMapping } from './abis/AbiMapping'
 import { ProviderSource } from './types/ProviderSource'
 import { normalizeAddress } from './utils/normalizeAddress'
+import { AbiDefinition } from './abis'
 
 const debug = require('debug')('tightbeam:ContractCache')
+
+interface ResolveContractOptions {
+  abi?: string
+  name?: string
+  address?: string
+}
+
+function error(message): void {
+  debug(message)
+  throw new Error(message)
+}
 
 /**
  * Look up contracts or ABIs by name or address.  Values are cached.  Also offers a contract resolver to easily retrieve an [[ethers.Contract]] object.
@@ -18,10 +30,10 @@ export class ContractCache {
     public readonly providerSource: ProviderSource
   ) {
     if (!abiMapping) {
-      throw new Error('abiMapping must be defined')
+      error('constructor: abiMapping must be defined')
     }
     if (!providerSource) {
-      throw new Error('provider source must be defined')
+      error('constructor: provider source must be defined')
     }
     this.contractCache = new Map<number, Map<string, ethers.Contract>>()
     this.ifaceCache = new Map<number, Map<string, ethers.utils.Interface>>()
@@ -33,19 +45,20 @@ export class ContractCache {
    * @param contractName The contract name used to register the contract in the [[AbiMapping]]
    */
   async getContractByName (contractName: string): Promise<ethers.Contract> {
-    if (!contractName) throw new Error('Contract name must be defined')
+    if (!contractName) error('Contract name must be defined')
+    const chainId = await this.getChainId()
+    let address = this.abiMapping.getContractAddress(contractName, chainId)
+    if (!address) {
+      error(`Cannot find address for ${contractName} and chain id ${chainId}`)
+    }
+    return await this.getContractByAddress(address)
+  }
 
+  async getChainId(): Promise<number> {
     const provider = await this.providerSource()
     const network = await provider.getNetwork()
     const { chainId } = network
-
-    let address = this.abiMapping.getContractAddress(contractName, chainId)
-
-    if (!address) {
-      throw new Error(`Cannot find address for ${contractName} and chain id ${chainId}`)
-    }
-    
-    return await this.getContractByAddress(address)
+    return chainId
   }
 
   /**
@@ -53,12 +66,10 @@ export class ContractCache {
    * 
    * @param address The address that the contract was added under in the [[AbiMapping]]
    */
-  async getContractByAddress (address: string): Promise<ethers.Contract> {
-    if (!address) throw new Error('Address must be defined')
+  async getContractByAddress (address: string, abi?: string): Promise<ethers.Contract> {
+    if (!address) error('Address must be defined')
 
-    const provider = await this.providerSource()
-    const network = await provider.getNetwork()
-    const { chainId } = network
+    const chainId = await this.getChainId()
     
     if (!this.contractCache[chainId]) {
       this.contractCache[chainId] = {}
@@ -68,10 +79,19 @@ export class ContractCache {
 
     let contract = this.contractCache[chainId][address]
     if (!contract) {
-      const abiDef = this.abiMapping.getContractAbiDefinitionByAddress(address, chainId)
-      if (!abiDef) {
-        throw new Error(`Could not find contract for address ${address} and chain id ${chainId}`)
+      let abiDef: AbiDefinition
+      if (abi) {
+        abiDef = await this.abiMapping.getAbiDefinition(abi)
+        if (!abiDef) {
+          error(`Could not find abi with name '${abi}'`)
+        }
+      } else {
+        abiDef = this.abiMapping.getContractAbiDefinitionByAddress(address, chainId)
+        if (!abiDef) {
+          error(`Could not find abi for address '${address}' and chain id '${chainId}'`)
+        }
       }
+      const provider = await this.providerSource()
       contract = new ethers.Contract(address, abiDef.abi, provider)
       this.contractCache[chainId][address] = contract
     }
@@ -88,35 +108,29 @@ export class ContractCache {
     if (!iface) {
       const abiDef = this.abiMapping.getAbiDefinition(abiName)
       if (!abiDef) {
-        throw new Error(`Could not find abi for name ${abiName}`)
+        error(`Could not find abi with name ${abiName}`)
       }
       iface = new ethers.utils.Interface(abiDef.abi)
       this.ifaceCache[abiName] = iface
     }
-    debug(`getInterface(${abiName}): `, iface)
     return iface
   }
 
-  async resolveContract({ abi, address, name }): Promise<ethers.Contract> {
-    let contract: ethers.Contract
-    const provider = await this.providerSource()
+  async resolveContract(resolveContractOptions: ResolveContractOptions): Promise<ethers.Contract> {
+    let { abi, address, name } = resolveContractOptions
 
     address = normalizeAddress(address)
 
-    if (abi) {
-      let ethersInterface = await this.getAbiInterfaceByName(abi)
-      if (!address) {
-        throw new Error(`abi ${abi} selected but no address passed`)
-      }
-      contract = new ethers.Contract(address, ethersInterface.abi, provider)
-    } else if (address) {
-      contract = await this.getContractByAddress(address)
+    let contract
+    if (address) {
+      contract = await this.getContractByAddress(address, abi)
     } else if (name) {
       contract = await this.getContractByName(name)
+    } else if (abi) {
+      error(`abi '${abi}' selected but no address passed`)
     } else {
-      throw new Error(`abi, address or name must be defined`)
+      error(`abi, address or name must be defined`)
     }
-
     return contract
   }
 }

@@ -31,6 +31,11 @@ describe('bindQueryResolvers', () => {
     expect(queries.callResolver).toHaveBeenCalledWith('contractCache', 'providerSource', 'a', 'b', 'c', 'd')
   })
 
+  it('should bind contract', () => {
+    bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).contract('a', 'b', 'c', 'd')
+    expect(queries.contractResolver).toHaveBeenCalledWith('contractCache', 'a', 'b', 'c', 'd')
+  })
+
   it('should bind network', () => {
     bindQueryResolvers(contractCache, providerSource, txProviderSource, defaultFromBlock).network('a', 'b', 'c', 'd')
     expect(queries.networkResolver).toHaveBeenCalledWith('providerSource')

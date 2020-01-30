@@ -2,6 +2,7 @@
 /node_modules
 /coverage
 /docs
+.history
 
 # Below are the dist files.
 _virtual

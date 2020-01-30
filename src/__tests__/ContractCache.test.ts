@@ -120,7 +120,7 @@ describe('ContractCache', () => {
     })
 
     it('should fail if the contract does not exist', async () => {
-      await expect(cache.getContractByAddress('0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6')).rejects.toEqual(new Error('Could not find contract for address 0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6 and chain id 1234'))
+      await expect(cache.getContractByAddress('0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6')).rejects.toEqual(new Error('Could not find abi for address \'0xD115BFFAbbdd893A6f7ceA402e7338643Ced44a6\' and chain id \'1234\''))
     })
   })
 
@@ -139,7 +139,7 @@ describe('ContractCache', () => {
     })
 
     it('should throw when abi missing', async () => {
-      await expect(cache.getAbiInterfaceByName('Abber')).rejects.toEqual(new Error('Could not find abi for name Abber'))
+      await expect(cache.getAbiInterfaceByName('Abber')).rejects.toEqual(new Error('Could not find abi with name Abber'))
     })
   })
 
@@ -161,7 +161,7 @@ describe('ContractCache', () => {
       })
   
       it('should require an address', async () => {
-        await expect(cache.resolveContract({ abi: 'Hello' })).rejects.toEqual(new Error('abi Hello selected but no address passed'))
+        await expect(cache.resolveContract({ abi: 'Hello' })).rejects.toEqual(new Error('abi \'Hello\' selected but no address passed'))
       })
     })
 

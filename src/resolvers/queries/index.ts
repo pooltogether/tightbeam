@@ -1,5 +1,6 @@
 export * from './accountResolver'
 export * from './blockResolver'
 export * from './callResolver'
+export * from './contractResolver'
 export * from './networkResolver'
 export * from './pastEventsResolver'

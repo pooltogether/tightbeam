@@ -30,7 +30,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   const signer = provider.getSigner()
 
   let contract = await contractCache.resolveContract({ abi, address, name })
-  contract = contract.connect(signer)
+  contract.connect(signer),
   address = contract.address
 
   const identifier = JSON.stringify({ abi, name, address })

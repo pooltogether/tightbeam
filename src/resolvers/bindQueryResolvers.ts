@@ -31,6 +31,15 @@ export function bindQueryResolvers(contractCache: ContractCache, providerSource:
         info
       ) 
     },
+    contract: function (opts, args, context, info) {
+      return queries.contractResolver(
+        contractCache,
+        opts,
+        args,
+        context,
+        info
+      )
+    },
     network: function () {
       return queries.networkResolver(providerSource) 
     },
