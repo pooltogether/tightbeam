@@ -12,6 +12,7 @@ const debug = require('debug')('tightbeam:sendTransaction')
 
 export async function sendTransactionResolver(contractCache: ContractCache, providerSource: ProviderSource, txId: number, opts, args, context, info): Promise<Transaction> {
   const { cache } = context
+  console.log({ context })
   let {
     abi,
     name,
@@ -74,7 +75,6 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
       transactions: data.transactions.concat([newTx])
     } 
   })
-
 
   const id = `Transaction:${newTx.id}`
   const readTx = (): Transaction => {
