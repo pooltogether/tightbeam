@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/tightbeam",
-  "version": "0.3.0",
+  "version": "1.0.0-rc1",
   "description": "Ethers.js bindings for Apollo Client",
   "main": "index.js",
   "browser": "index.js",
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
+    "lodash": "^4.17.15",
     "lodash.merge": "^4.6.2",
     "zen-observable-ts": "^0.8.20"
   },

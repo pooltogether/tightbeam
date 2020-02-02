@@ -102,7 +102,7 @@ export class Tightbeam {
     return merge(otherState, 
       {
         data: {
-          transactions: []
+          _transactions: []
         }
       }
     )

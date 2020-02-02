@@ -1,5 +1,4 @@
-import { allTransactionsQuery, transactionFragment } from '../../../queries'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { transactionFragment } from '../../../queries'
 import { ethers } from 'ethers'
 
 const { sendTransactionResolver } = require('../sendTransactionResolver')
@@ -7,16 +6,31 @@ const { sendTransactionResolver } = require('../sendTransactionResolver')
 jest.mock('../../../utils/castToJsonRpcProvider')
 jest.mock('../../../services/watchTransaction')
 
+let resolveSendUncheckedTransaction
+let rejectSendUncheckedTransaction
+let sendUncheckedTransactionPromise
+function sendUncheckedTransactionFactory() {
+  return {
+    sendUncheckedTransaction: () => sendUncheckedTransactionPromise
+  }
+}
+
+jest.mock('../../../services/sendUncheckedTransaction', sendUncheckedTransactionFactory)
+
 const { watchTransaction } = require('../../../services/watchTransaction')
 
+const debug = require('debug')('tightbeam:sendTransactionResolver.test')
+
 describe('sendTransactionResolver', () => {
-  let cache
+  let client
 
   let contractCache, contract, provider, providerSource, signer
 
-  let sendUncheckedTransactionPromise
-
   beforeEach(() => {
+    sendUncheckedTransactionPromise = new Promise((resolve, reject) => {
+      resolveSendUncheckedTransaction = resolve
+      rejectSendUncheckedTransaction = reject
+    })
     /**
      * 
      * Need to mock:
@@ -27,16 +41,13 @@ describe('sendTransactionResolver', () => {
      * - signer.sendUncheckedTransaction
      * 
      */
-    
-    cache = new InMemoryCache()
 
-    // initialize cache
-    cache.writeQuery({
-      query: allTransactionsQuery,
-      data: {
-        transactions: []
-      }
-    })
+    client = {
+      readQuery: jest.fn(() => ({ _transactions: ['tx1'] })),
+      writeData: jest.fn((data) => { debug('WRROOOOTE ', data)}),
+      writeFragment: jest.fn(function () { debug('writeFragment: ', arguments)}),
+      readFragment: jest.fn()
+    }
 
     contractCache = {
       resolveContract: jest.fn(() => contract)
@@ -58,21 +69,14 @@ describe('sendTransactionResolver', () => {
       }
     }
 
-    sendUncheckedTransactionPromise = Promise.resolve()
+    
 
-    signer = {
-      sendUncheckedTransaction: jest.fn(() => sendUncheckedTransactionPromise)
-    }
-
+    signer = {}
     provider = {
       getSigner: jest.fn(() => signer)
     }
 
     providerSource = () => Promise.resolve(provider)
-  })
-
-  afterEach(() => {
-    jest.resetAllMocks()
   })
 
   it('should complain when the fn does not exist', async () => {
@@ -86,7 +90,7 @@ describe('sendTransactionResolver', () => {
         fn: 'badFn',
         params: [1, "hey there"]
       },
-      { cache },
+      { client },
       {}
     )).rejects.toEqual(new Error('Unknown function badFn for {"name":"Dai","address":"0x1234"}'))
   })
@@ -106,11 +110,11 @@ describe('sendTransactionResolver', () => {
         minimumGas: ethers.utils.bigNumberify('48'),
         params: [1, "yo"]
       },
-      { cache },
+      { client },
       {}
     )
 
-    expect(transaction).toMatchObject({
+    const tx = {
       __typename: 'Transaction',
       id: 1,
       fn: 'callMe',
@@ -131,11 +135,30 @@ describe('sendTransactionResolver', () => {
         __typename: 'JSON'
       },
       value: null
-    })
-    
-    const cached = cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })
+    }
 
-    expect(cached).toMatchObject(transaction)
+    expect(transaction).toMatchObject(tx)
+
+    expect(client.writeData).toHaveBeenCalledWith({
+      data: {
+        _transactions: [
+          'tx1',
+          tx
+        ]
+      }
+    })
+
+    await resolveSendUncheckedTransaction('hash')
+
+    expect(client.writeFragment).toHaveBeenCalledWith({
+      id: 'Transaction:1',
+      fragment: transactionFragment,
+      data: {
+        ...tx,
+        hash: 'hash',
+        sent: true
+      }
+    })
   })
 
   it('should accept value param', async () => {
@@ -146,14 +169,22 @@ describe('sendTransactionResolver', () => {
       {
         name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')
       },
-      { cache },
+      { client },
       {}
     )
     expect(transaction.value).toEqual('12')
-    
-    const cached = cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })
 
-    expect(cached.value).toEqual('12')
+    await resolveSendUncheckedTransaction('hash')
+
+    expect(client.writeFragment).toHaveBeenCalledWith({
+      id: 'Transaction:1',
+      fragment: transactionFragment,
+      data: {
+        ...transaction,
+        hash: 'hash',
+        sent: true
+      }
+    })
   })
 
   it('should accept null params', async () => {
@@ -167,7 +198,7 @@ describe('sendTransactionResolver', () => {
         fn: 'callMe',
         params: null
       },
-      { cache },
+      { client },
       {}
     )
     expect(transaction.params).toEqual({ "__typename": "JSON", "values": [] })
@@ -185,7 +216,7 @@ describe('sendTransactionResolver', () => {
         params: [1, "what's up"],
         value: ethers.utils.bigNumberify('12')
       },
-      { cache },
+      { client },
       {}
     )
     expect(transaction.abi).toEqual('ERC20')
@@ -201,37 +232,54 @@ describe('sendTransactionResolver', () => {
         name: 'Dai',
         fn: 'callMe',
         params: [1, "g'day"],
-        value: ethers.utils.bigNumberify('12')
+        value: '12'
       },
-      { cache },
+      { client },
       {}
     )
 
-    expect(transaction.hash).toEqual(null)
-    expect(transaction.error).toEqual(null)
-    expect(transaction.completed).toEqual(false)
-    expect(transaction.sent).toEqual(false)
+    const tx = {
+      __typename: 'Transaction',
+      id: 1,
+      fn: 'callMe',
+      name: 'Dai',
+      abi: null,
+      address: '0x1234',
+      completed: false,
+      sent: false,
+      hash: null,
+      gasPrice: null,
+      gasLimit: null,
+      scaleGasEstimate: null,
+      minimumGas: null,
+      error: null,
+      blockNumber: null,
+      params: {
+        values: ['1', "g'day"],
+        __typename: 'JSON'
+      },
+      value: '12'
+    }
 
-    expect(cache.readFragment({ fragment: transactionFragment, id: `Transaction:1` })).toMatchObject(transaction)
+    expect(transaction).toMatchObject(tx)
+
+    try {
+      await rejectSendUncheckedTransaction(new Error('failmessage'))
+      await sendUncheckedTransactionPromise
+    } catch (e) {
+      expect(e.message).toEqual('failmessage')
+    }
+
+    expect(client.writeFragment).toHaveBeenCalledWith({
+      id: `Transaction:1`, 
+      fragment: transactionFragment,
+      data: {
+        ...tx,
+        completed: true,
+        sent: true,
+        error: 'failmessage'
+      }
+    })
     expect(watchTransaction).not.toHaveBeenCalled()
-
-
-
-    // One more time, with error!
-    sendUncheckedTransactionPromise = Promise.reject(new Error('failmessage'))
-    await sendTransactionResolver(
-      contractCache,
-      providerSource,
-      1,
-      {},
-      {
-        name: 'Dai',
-        fn: 'callMe',
-        params: [1, "oi!"],
-        value: ethers.utils.bigNumberify('12')
-      },
-      { cache },
-      {}
-    )
   })
 })

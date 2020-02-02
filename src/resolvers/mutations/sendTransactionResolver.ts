@@ -1,7 +1,7 @@
-import { allTransactionsQuery } from '../../queries'
+import { cachedTransactionsQuery } from '../../queries'
 import { ContractCache } from '../../ContractCache'
 
-import { sendUncheckedTransaction } from '../../services'
+import { sendUncheckedTransaction } from '../../services/sendUncheckedTransaction'
 import { transactionFragment } from '../../queries'
 import { Transaction, TransactionParams } from '../../types/Transaction'
 import { ProviderSource } from '../../types/ProviderSource'
@@ -11,8 +11,7 @@ import { watchTransaction } from '../../services/watchTransaction'
 const debug = require('debug')('tightbeam:sendTransaction')
 
 export async function sendTransactionResolver(contractCache: ContractCache, providerSource: ProviderSource, txId: number, opts, args, context, info): Promise<Transaction> {
-  const { cache } = context
-  console.log({ context })
+  const { client } = context
   let {
     abi,
     name,
@@ -66,62 +65,55 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     params: new TransactionParams(Array.from(params).map(param => param.toString())),
   }
 
-  const query = allTransactionsQuery
-  const data = cache.readQuery({ query })
+  const query = cachedTransactionsQuery
+  const data = client.readQuery({ query })
 
-  cache.writeQuery({
-    query,
+  client.writeData({
+    // query,
     data: {
-      transactions: data.transactions.concat([newTx])
+      _transactions: data._transactions.concat([newTx])
     } 
   })
 
   const id = `Transaction:${newTx.id}`
-  const readTx = (): Transaction => {
-    return cache.readFragment({ fragment: transactionFragment, id })
-  }
 
   sendUncheckedTransaction(contractCache, providerSource, newTx)
     .then(hash => {
-      const transaction = readTx()
-
       const data = {
-        ...transaction,
+        ...newTx,
         hash,
         sent: true
       }
       debug(`Tx sent!`)
 
-      cache.writeFragment({
+      client.writeFragment({
         id,
         fragment: transactionFragment,
         data
       })
 
-      watchTransaction(id, cache, provider)
+      watchTransaction(id, client, provider)
 
-      return transaction
+      return data
     })
     .catch(error => {
       console.error(error)
       debug(`Error occured while sending transaction`, error)
-      
-      const transaction = readTx()
 
       const data = {
-        ...transaction, 
+        ...newTx, 
         completed: true, 
         sent: true, 
         error: error.message
       }
 
-      cache.writeFragment({
+      client.writeFragment({
         id,
         fragment: transactionFragment,
         data
       })
 
-      return transaction
+      return data
     })
 
   return newTx

@@ -6,7 +6,7 @@ import { transactionFragment } from './transactionFragment'
  */
 export const allTransactionsQuery = gql`
   query allTransactionsQuery {
-    transactions @client {
+    transactions @client(always: true) {
       ...transaction
     }
   }

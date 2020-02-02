@@ -64,7 +64,7 @@ describe('Tightbeam', () => {
 
       expect(tb.defaultCacheData()).toEqual({
         data: {
-          transactions: []
+          _transactions: []
         }
       })
     })
@@ -75,7 +75,7 @@ describe('Tightbeam', () => {
       expect(tb.defaultCacheData({ data: { foo: 'bar' }})).toEqual({
         data: {
           foo: 'bar',
-          transactions: []
+          _transactions: []
         }
       })
     })

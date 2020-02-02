@@ -54,7 +54,6 @@ export function bindQueryResolvers(contractCache: ContractCache, providerSource:
         info
       )
     },
-    /*
     transaction: function (opts, args, context, info) {
       return queries.transactionResolver(
         opts,
@@ -71,6 +70,5 @@ export function bindQueryResolvers(contractCache: ContractCache, providerSource:
         info
       )
     }
-    */
   }
 }

@@ -2,11 +2,11 @@ import { transactionFragment } from '../../queries'
 import { Transaction } from '../../types/Transaction'
 
 export async function transactionResolver(opts, args, { cache, getCacheKey }, info): Promise<Transaction> {
-  console.log('transactionResolver BEFORE', args)
-
   let {
     id
   } = args
+
+  console.log("START FIRE! ", id)
 
   if (!id) { return null }
   
@@ -17,7 +17,7 @@ export async function transactionResolver(opts, args, { cache, getCacheKey }, in
     fragment: transactionFragment
   })
 
-  console.log('transactionResolver', { id, cacheKey: cacheKey.toString(), result })
+  console.log("FIRED! ", id, result)
 
   return result
 }

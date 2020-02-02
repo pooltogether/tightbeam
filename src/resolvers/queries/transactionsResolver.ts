@@ -1,20 +1,33 @@
 import { Transaction } from '../../types/Transaction'
-import { allTransactionsQuery } from '../../queries'
+import { cachedTransactionsQuery } from '../../queries'
+
+const debug = require('debug')('tightbeam:transactionsResolver')
 
 export async function transactionsResolver(opts, args, { cache }, info): Promise<Array<Transaction>> {
   let {
+    id,
     name,
     address,
     fn
-  } = args
+  } = args || {}
 
-  const query = allTransactionsQuery
-  const { transactions } = cache.readQuery({ query })
+  debug('FIRING TXS RESOLVER! ', { id,
+    name,
+    address,
+    fn })
 
-  return transactions.filter(tx => {
+  const query = cachedTransactionsQuery
+  const { _transactions } = cache.readQuery({ query })
+
+  const result = _transactions.filter(tx => {
+    const matchId = !id || tx.id === id
     const matchName = !name || tx.name === name
     const matchAddress = !address || tx.address === address
     const matchFn = !fn || ((matchName || matchAddress) &&  tx.fn === fn)
-    return matchName && matchAddress && matchFn
+    return matchId && matchName && matchAddress && matchFn
   })
+
+  debug('found: ', _transactions, result)
+
+  return result
 }
