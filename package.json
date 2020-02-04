@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/tightbeam",
-  "version": "1.0.1-rc1",
+  "version": "0.4.0",
   "description": "Ethers.js bindings for Apollo Client",
   "main": "index.js",
   "browser": "index.js",
@@ -45,6 +45,7 @@
     "graphql-tag": "^2.10.1",
     "jest": "^24.9.0",
     "node-fetch": "^2.6.0",
+    "promise.allsettled": "^1.0.2",
     "rollup": "^1.27.4",
     "rollup-plugin-typescript": "^1.0.1",
     "ts-jest": "^24.2.0",

@@ -33,7 +33,13 @@ export async function callResolver(contractCache: ContractCache, providerSource:
 
       debug({ identifier, fn, params })
 
-      const value = await provider.call(tx)
+      let value
+      if (context.multicallBatch) {
+        value = await context.multicallBatch.call(tx)
+      } else {
+        value = await provider.call(tx)
+      }
+
       let returns = fnCall.decode(value)
       if (fnCall.outputs.length === 1) {
           returns = returns[0];

@@ -27,6 +27,7 @@ import { EventFilter } from './types'
 import { eventSubscriber, EventSubscriptionManager, BlockSubscriptionManager } from './subscribers'
 import Observable from 'zen-observable-ts'
 import { Log } from 'ethers/providers'
+import { MulticallLink } from './multicall/MulticallLink'
 
 const merge = require('lodash.merge')
 
@@ -73,6 +74,10 @@ export class Tightbeam {
 
   resolvers (clientResolvers = {}) {
     return merge(clientResolvers, this.bindResolvers())
+  }
+
+  multicallLink () {
+    return new MulticallLink(this.providerSource)
   }
 
   async subscribeEvent (eventFilter: EventFilter) {

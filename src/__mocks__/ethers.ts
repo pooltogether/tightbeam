@@ -5,7 +5,8 @@ export const ethers = {
     Interface: jest.fn(),
     bigNumberify: ethersOriginal.utils.bigNumberify,
     defaultAbiCoder: ethersOriginal.utils.defaultAbiCoder,
-    getAddress: ethersOriginal.utils.getAddress
+    getAddress: ethersOriginal.utils.getAddress,
+    hexlify: ethersOriginal.utils.hexlify
   },
   Contract: jest.fn()
 }

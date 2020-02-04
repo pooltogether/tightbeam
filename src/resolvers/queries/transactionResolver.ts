@@ -6,8 +6,6 @@ export async function transactionResolver(opts, args, { cache, getCacheKey }, in
     id
   } = args
 
-  console.log("START FIRE! ", id)
-
   if (!id) { return null }
   
   let cacheKey = getCacheKey({ __typename: 'Transaction', id: id.toString() })
@@ -16,8 +14,6 @@ export async function transactionResolver(opts, args, { cache, getCacheKey }, in
     id: cacheKey,
     fragment: transactionFragment
   })
-
-  console.log("FIRED! ", id, result)
 
   return result
 }
