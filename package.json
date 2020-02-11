@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/tightbeam",
-  "version": "1.0.3-rc1",
+  "version": "1.0.4-rc1",
   "description": "Ethers.js bindings for Apollo Client",
   "main": "index.js",
   "browser": "index.js",
@@ -11,7 +11,7 @@
   "scripts": {
     "test": "jest",
     "dist": "rollup -c rollup.config.js",
-    "dist-clean": "rm -rf _virtual abis queries resolvers services subscribers types utils ContractCache.js index.js Tightbeam.js",
+    "dist-clean": "rm -rf _virtual abis queries resolvers services subscribers types utils ContractCache.js index.js Tightbeam.js multicall",
     "watch": "rollup -w -c rollup.config.js",
     "coverage": "jest --coverage --coverageReporters html",
     "test-watch": "jest --watchAll",

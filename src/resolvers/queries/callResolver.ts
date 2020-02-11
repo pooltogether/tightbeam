@@ -34,8 +34,10 @@ export async function callResolver(contractCache: ContractCache, providerSource:
       debug({ identifier, fn, params })
 
       let value
-      if (context.multicallBatch) {
-        value = await context.multicallBatch.call(tx)
+      if (context.multicallBatch && (await context.multicallBatch.isSupported())) {
+        const to = await tx.to
+        const data = await tx.data
+        value = await context.multicallBatch.call(to, data)
       } else {
         value = await provider.call(tx)
       }

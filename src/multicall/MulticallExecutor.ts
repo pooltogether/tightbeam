@@ -22,6 +22,7 @@ export class MulticallExecutor {
       data: callData
     }
     const provider = await this.providerSource()
+
     const result = await provider.call(tx)
 
     return result

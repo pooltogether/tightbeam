@@ -14,7 +14,8 @@ export class MulticallLink extends ApolloLink {
 
   request(operation, forward) {
     const multicallBatch = new MulticallBatch(this.multicallExecutor)
-    multicallBatch.setBatchSize(countCalls(operation.query))
+    const batchSize = countCalls(operation.query)
+    multicallBatch.setBatchSize(batchSize)
     operation.setContext((context) => ({
       multicallBatch,
       ...context

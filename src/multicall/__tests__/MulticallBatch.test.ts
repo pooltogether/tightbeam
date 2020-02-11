@@ -26,7 +26,7 @@ describe('MulticallBatch', () => {
     execute = jest.fn(() => 'results')
     executor = {
       execute,
-      networkSupportsMulticall: () => true
+      networkSupportsMulticall: () => Promise.resolve(true)
     }
     batch = new MulticallBatch(executor)
   })
@@ -34,16 +34,13 @@ describe('MulticallBatch', () => {
   it('should execute immediately if batch size is not set', async () => {
     decodeCallsResult = [1, ['0xabcd decoded']]
 
-    let tx = {
-      to: '0x1234',
-      data: '0xabcd'
-    }
+    const to = '0x1234'
+    const data = '0xabcd'
 
-    const result = await batch.call(tx)
+    const result = await batch.call(to, data)
 
     expect(result).toEqual('0xabcd decoded')
-
-    expect(encodeCalls).toHaveBeenCalledWith([])
+    expect(execute).toHaveBeenCalledTimes(1)
     expect(execute).toHaveBeenCalledWith('encoded')
   })
 
@@ -59,24 +56,18 @@ describe('MulticallBatch', () => {
       ]
     ]
 
-    let tx1 = {
-      to: '0x1',
-      data: 'tx1'
-    }
+    let to1 = '0x1'
+    let data1 = 'tx1'
 
-    let tx2 = {
-      to: '0x2',
-      data: 'tx2'
-    }
+    let to2 = '0x2'
+    let data2 = 'tx2'
 
-    let tx3 = {
-      to: '0x3',
-      data: 'tx3'
-    }
+    let to3 = '0x3'
+    let data3 = 'tx3'
 
-    const promise1 = batch.call(tx1)
-    const promise2 = batch.call(tx2)
-    const promise3 = batch.call(tx3)
+    const promise1 = batch.call(to1, data1)
+    const promise2 = batch.call(to2, data2)
+    const promise3 = batch.call(to3, data3)
 
     const [result1, result2, result3] = await Promise.all([promise1, promise2, promise3])
 

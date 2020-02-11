@@ -3,7 +3,8 @@ import {
   MULTICALL_ADDRESS_MAINNET,
   MULTICALL_ADDRESS_KOVAN,
   MULTICALL_ADDRESS_RINKEBY,
-  MULTICALL_ADDRESS_GOERLI
+  MULTICALL_ADDRESS_GOERLI,
+  AGGREGATE_SELECTOR
 } from '../MulticallExecutor'
 
 describe('MulticallExecutor', () => {
@@ -29,8 +30,8 @@ describe('MulticallExecutor', () => {
       chainId = 1
       await executor.execute('0x1234')
       expect(provider.call).toHaveBeenCalledWith({
-        address: MULTICALL_ADDRESS_MAINNET,
-        data: '0x1234'
+        to: MULTICALL_ADDRESS_MAINNET,
+        data: `${AGGREGATE_SELECTOR}1234`
       })
     })
   
@@ -38,8 +39,8 @@ describe('MulticallExecutor', () => {
       chainId = 42
       await executor.execute('0x1234')
       expect(provider.call).toHaveBeenCalledWith({
-        address: MULTICALL_ADDRESS_KOVAN,
-        data: '0x1234'
+        to: MULTICALL_ADDRESS_KOVAN,
+        data: `${AGGREGATE_SELECTOR}1234`
       })
     })
   
@@ -47,8 +48,8 @@ describe('MulticallExecutor', () => {
       chainId = 4
       await executor.execute('0x1234')
       expect(provider.call).toHaveBeenCalledWith({
-        address: MULTICALL_ADDRESS_RINKEBY,
-        data: '0x1234'
+        to: MULTICALL_ADDRESS_RINKEBY,
+        data: `${AGGREGATE_SELECTOR}1234`
       })
     })
   
@@ -56,8 +57,8 @@ describe('MulticallExecutor', () => {
       chainId = 5
       await executor.execute('0x1234')
       expect(provider.call).toHaveBeenCalledWith({
-        address: MULTICALL_ADDRESS_GOERLI,
-        data: '0x1234'
+        to: MULTICALL_ADDRESS_GOERLI,
+        data: `${AGGREGATE_SELECTOR}1234`
       })
     })
   
