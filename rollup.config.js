@@ -10,8 +10,10 @@ export default {
   external: [
     'apollo-client',
     'apollo-cache-inmemory',
+    'apollo-link',
     'graphql-tag',
     'graphql',
+    'graphql-anywhere',
     'ethers',
     'date-fns',
     'lodash',
