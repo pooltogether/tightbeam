@@ -1,10 +1,7 @@
 import { ApolloClient } from 'apollo-client'
-import { withClientState } from 'apollo-link-state'
-import { ApolloLink } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { sendTransactionMutation } from '../sendTransactionMutation'
-import { Transaction, TransactionParams } from '../../types'
 
 describe('sendTransactionMutation', () => {
 
@@ -17,18 +14,15 @@ describe('sendTransactionMutation', () => {
       fetch: jest.fn()
     });
     sendTransaction = jest.fn()
-    const stateLink = withClientState({
+    
+    client = new ApolloClient({
       cache,
+      link: httpLink,
       resolvers: {
         Mutation: {
           sendTransaction
         }
       }
-    })
-    
-    client = new ApolloClient({
-      cache,
-      link: ApolloLink.from([stateLink, httpLink])
     })
     
   })
