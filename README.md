@@ -1,33 +1,17 @@
-# tightbeam
+# Tightbeam
 
-[![CircleCI](https://circleci.com/gh/pooltogether/tightbeam.svg?style=svg)](https://circleci.com/gh/pooltogether/tightbeam)
+[![CircleCI](https://circleci.com/gh/pooltogether/tightbeam.svg?style=svg)](https://circleci.com/gh/pooltogether/tightbeam) [Test Coverage](https://coverage.tightbeam.pooltogether.com)
 
-[Test Coverage](https://coverage.tightbeam.pooltogether.com)
+Tightbeam is an extension for [Apollo Client](https://github.com/apollographql/apollo-client) that allows you to communicate with Ethereum smart contracts.  
 
-[API Reference](https://docs.tightbeam.pooltogether.com)
+Features:
 
-This module makes connecting a web application to Ethereum dead easy.
+- Make calls to smart contracts.  Calls are batched using [Multicall](https://github.com/makerdao/multicall) when supported by the network.
+- Get current network and account
+- Get blocks
+- Execute transactions
 
-Tightbeam provides [Ethers.js](https://github.com/ethers-io/ethers.js) bindings for [Apollo Client](https://github.com/apollographql/apollo-client).
-
-Here is an example using Apollo Client directly:
-
-```javascript
-const result = await client.readQuery({
-  query: gql`
-    query dai($address: String!) {
-      totalSupply: call(name: Dai, fn: totalSupply) @client
-      myBalance: call(name: Dai, fn: balanceOf, params: [$address]) @client
-    }
-  `,
-  variables: {
-    address: "0xb2930b35844a230f00e51431acae96fe543a0347"
-  }
-})
-
-console.log(result.dai.totalSupply)
-console.log(result.dai.myBalance)
-```
+Apollo Client is a powerful framework that allows web applications to communicate with GraphQL servers. By leveraging it's powerful caching and the Multicall smart contract it's possible to build extremely fast Ethereum dApps.
 
 # Installation
 
@@ -43,8 +27,8 @@ $ yarn add @pooltogether/tightbeam
 
 | Tested Dependency | Version |
 | ----------        | ------- |
-| [Ethers.js](https://github.com/ethers-io/ethers.js)                     | 4.x     |
-| [Apollo Client](https://github.com/apollographql/apollo-client)         | 2.6.x   |
+| [Ethers.js](https://github.com/ethers-io/ethers.js)                     | ^4.x     |
+| [Apollo Client](https://github.com/apollographql/apollo-client)         | 2.6.8   |
 
 # Usage
 
