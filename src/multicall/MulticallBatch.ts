@@ -4,10 +4,14 @@ import { decodeCalls } from './decodeCalls'
 import { MulticallExecutor } from './MulticallExecutor'
 import { Arrayish } from 'ethers/utils'
 
+let nextId = 0
+
+const debug = require('debug')('tightbeam:MulticallBatch')
+
 export class MulticallBatch {
   private calls: Array<Call> = []
   private batchSize: number = 0
-  private id: number
+  public readonly id: number = nextId++
 
   constructor(
     private readonly executor: MulticallExecutor
@@ -54,6 +58,7 @@ export class MulticallBatch {
 
   async execute() {
     const data = encodeCalls(this.calls)
+    debug('execute', { batchId: this.id })
     const returnData = await this.executor.execute(data)
     const [blockNumber, returnValues] = decodeCalls(returnData)
 

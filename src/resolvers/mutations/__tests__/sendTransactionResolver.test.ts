@@ -22,7 +22,7 @@ const { watchTransaction } = require('../../../services/watchTransaction')
 const debug = require('debug')('tightbeam:sendTransactionResolver.test')
 
 describe('sendTransactionResolver', () => {
-  let client
+  let cache
 
   let contractCache, contract, provider, providerSource, signer
 
@@ -42,7 +42,7 @@ describe('sendTransactionResolver', () => {
      * 
      */
 
-    client = {
+    cache = {
       readQuery: jest.fn(() => ({ _transactions: ['tx1'] })),
       writeData: jest.fn((data) => { debug('WRROOOOTE ', data)}),
       writeFragment: jest.fn(function () { debug('writeFragment: ', arguments)}),
@@ -90,7 +90,7 @@ describe('sendTransactionResolver', () => {
         fn: 'badFn',
         params: [1, "hey there"]
       },
-      { client },
+      { cache },
       {}
     )).rejects.toEqual(new Error('Unknown function badFn for {"name":"Dai","address":"0x1234"}'))
   })
@@ -110,7 +110,7 @@ describe('sendTransactionResolver', () => {
         minimumGas: ethers.utils.bigNumberify('48'),
         params: [1, "yo"]
       },
-      { client },
+      { cache },
       {}
     )
 
@@ -139,7 +139,7 @@ describe('sendTransactionResolver', () => {
 
     expect(transaction).toMatchObject(tx)
 
-    expect(client.writeData).toHaveBeenCalledWith({
+    expect(cache.writeData).toHaveBeenCalledWith({
       data: {
         _transactions: [
           'tx1',
@@ -150,7 +150,7 @@ describe('sendTransactionResolver', () => {
 
     await resolveSendUncheckedTransaction('hash')
 
-    expect(client.writeFragment).toHaveBeenCalledWith({
+    expect(cache.writeFragment).toHaveBeenCalledWith({
       id: 'Transaction:1',
       fragment: transactionFragment,
       data: {
@@ -169,14 +169,14 @@ describe('sendTransactionResolver', () => {
       {
         name: 'Dai', fn: 'callMe', params: [1, "hello"], value: ethers.utils.bigNumberify('12')
       },
-      { client },
+      { cache },
       {}
     )
     expect(transaction.value).toEqual('12')
 
     await resolveSendUncheckedTransaction('hash')
 
-    expect(client.writeFragment).toHaveBeenCalledWith({
+    expect(cache.writeFragment).toHaveBeenCalledWith({
       id: 'Transaction:1',
       fragment: transactionFragment,
       data: {
@@ -198,7 +198,7 @@ describe('sendTransactionResolver', () => {
         fn: 'callMe',
         params: null
       },
-      { client },
+      { cache },
       {}
     )
     expect(transaction.params).toEqual({ "__typename": "JSON", "values": [] })
@@ -216,7 +216,7 @@ describe('sendTransactionResolver', () => {
         params: [1, "what's up"],
         value: ethers.utils.bigNumberify('12')
       },
-      { client },
+      { cache },
       {}
     )
     expect(transaction.abi).toEqual('ERC20')
@@ -234,7 +234,7 @@ describe('sendTransactionResolver', () => {
         params: [1, "g'day"],
         value: '12'
       },
-      { client },
+      { cache },
       {}
     )
 
@@ -270,7 +270,7 @@ describe('sendTransactionResolver', () => {
       expect(e.message).toEqual('failmessage')
     }
 
-    expect(client.writeFragment).toHaveBeenCalledWith({
+    expect(cache.writeFragment).toHaveBeenCalledWith({
       id: `Transaction:1`, 
       fragment: transactionFragment,
       data: {

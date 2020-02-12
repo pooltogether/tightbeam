@@ -27,16 +27,25 @@ $ yarn add @pooltogether/tightbeam
 
 | Tested Dependency | Version |
 | ----------        | ------- |
-| [Ethers.js](https://github.com/ethers-io/ethers.js)                     | ^4.x     |
-| [Apollo Client](https://github.com/apollographql/apollo-client)         | 2.6.8   |
+| [Ethers.js](https://github.com/ethers-io/ethers.js)                     | 4.x     |
+| [Apollo Client](https://github.com/apollographql/apollo-client)         | 2.6.x   |
+| [Apollo Link State](https://github.com/apollographql/apollo-link-state) | 0.4.x   |
 
-# Usage
+**Note:** The latest version of Apollo Client doesn't handle errors correctly when using client resolvers.  See [issue 4575](https://github.com/apollographql/apollo-client/issues/4575).  Errors will be swallowed.
+
+Instead, we recommended that you stick with Apollo Link State until the client has been updated.
+
+# Setup
 
 The simplest way to get started is to attach the Tightbeam resolvers to ApolloClient:
 
 ```javascript
 
 import { Tightbeam } from 'tightbeam'
+
+import { withClientState } from 'apollo-link-state'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { createHttpLink } from 'apollo-link-http'
 
 const tb = new Tightbeam()
 
@@ -45,15 +54,15 @@ const cache = new InMemoryCache()
 // Ensure that the expected defaults are present
 cache.writeData(tb.defaultCacheData())
 
-const httpLink = createHttpLink({
-  uri: CHAIN_URIS[DEFAULT_CHAIN_ID]
-});
-
 // Now attach the Tightbeam resolvers
 const stateLink = withClientState({
   cache,
   resolvers: tb.resolvers()
 })
+
+const httpLink = createHttpLink({
+  uri: 'https://thegraph.com/yourgraphurl'
+});
 
 client = new ApolloClient({
   cache,
@@ -62,13 +71,15 @@ client = new ApolloClient({
 
 ```
 
+Note the use of `apollo-link-state`; it's required for multicall batching to work.
+
 The `defaultCacheData()` function takes one optional argument that is your desired default state.  It will merge the two.
 
 The `resolvers()` function takes one optional argument of resolvers.  It will merge the Tightbeam resolvers into the passed object.
 
 Now you can talk to Ethereum!
 
-# Querying for Network, Account
+# Usage
 
 Let's query for the current network and account:
 

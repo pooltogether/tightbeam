@@ -11,7 +11,7 @@ import { watchTransaction } from '../../services/watchTransaction'
 const debug = require('debug')('tightbeam:sendTransaction')
 
 export async function sendTransactionResolver(contractCache: ContractCache, providerSource: ProviderSource, txId: number, opts, args, context, info): Promise<Transaction> {
-  const { client } = context
+  const { cache } = context
   let {
     abi,
     name,
@@ -66,9 +66,9 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
   }
 
   const query = cachedTransactionsQuery
-  const data = client.readQuery({ query })
+  const data = cache.readQuery({ query })
 
-  client.writeData({
+  cache.writeData({
     // query,
     data: {
       _transactions: data._transactions.concat([newTx])
@@ -86,13 +86,13 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
       }
       debug(`Tx sent!`)
 
-      client.writeFragment({
+      cache.writeFragment({
         id,
         fragment: transactionFragment,
         data
       })
 
-      watchTransaction(id, client, provider)
+      watchTransaction(id, cache, provider)
 
       return data
     })
@@ -107,7 +107,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
         error: error.message
       }
 
-      client.writeFragment({
+      cache.writeFragment({
         id,
         fragment: transactionFragment,
         data

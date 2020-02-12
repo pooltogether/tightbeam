@@ -3,6 +3,8 @@ import { ProviderSource } from '../../types/ProviderSource'
 
 const debug = require('debug')('tightbeam:callResolver')
 
+let count = 0
+
 export async function callResolver(contractCache: ContractCache, providerSource: ProviderSource, opts, args, context, info) {
   let {
     name,
@@ -13,6 +15,11 @@ export async function callResolver(contractCache: ContractCache, providerSource:
   } = args
 
   params = params || []
+
+  if (count == 0) {
+    count++
+    console.log({opts, args, context, info})
+  }
 
   const contract = await contractCache.resolveContract({ abi, address, name })
   const identifier = JSON.stringify({ abi, name, address })
