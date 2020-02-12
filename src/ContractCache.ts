@@ -10,6 +10,7 @@ const debug = require('debug')('tightbeam:ContractCache')
 interface ResolveContractOptions {
   abi?: string
   name?: string
+  contract?: string
   address?: string
 }
 
@@ -117,20 +118,22 @@ export class ContractCache {
   }
 
   async resolveContract(resolveContractOptions: ResolveContractOptions): Promise<ethers.Contract> {
-    let { abi, address, name } = resolveContractOptions
+    let { abi, address, name, contract } = resolveContractOptions
+
+    let contractName = name || contract
 
     address = normalizeAddress(address)
 
-    let contract
+    let result
     if (address) {
-      contract = await this.getContractByAddress(address, abi)
+      result = await this.getContractByAddress(address, abi)
     } else if (name) {
-      contract = await this.getContractByName(name)
+      result = await this.getContractByName(contractName)
     } else if (abi) {
       error(`abi '${abi}' selected but no address passed`)
     } else {
-      error(`abi, address or name must be defined`)
+      error(`abi, address or contract must be defined`)
     }
-    return contract
+    return result
   }
 }

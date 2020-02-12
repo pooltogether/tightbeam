@@ -150,7 +150,7 @@ describe('ContractCache', () => {
     })
 
     it('should fail when no params are passed', async () => {
-      await expect(cache.resolveContract({})).rejects.toEqual(new Error(`abi, address or name must be defined`))
+      await expect(cache.resolveContract({})).rejects.toEqual(new Error(`abi, address or contract must be defined`))
     })
 
     describe('when passing an abi', () => {

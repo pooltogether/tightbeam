@@ -30,7 +30,7 @@ describe('callResolver()', () => {
   })
 
   it('should fail when fn does not exist', async () => {
-    await expect(callResolver(contractCache, providerSource, {}, { name: 'ContractName', fn: 'funky' }, {}, {})).rejects.toEqual(new Error(`Unknown function funky for {"name":"ContractName"}`))
+    await expect(callResolver(contractCache, providerSource, {}, { name: 'ContractName', fn: 'funky' }, {}, {})).rejects.toEqual(new Error(`Unknown function funky for {"contract":"ContractName"}`))
   })
 
   it('should call when it works!', async () => {
@@ -68,6 +68,6 @@ describe('callResolver()', () => {
     provider.call = () => Promise.reject('error!')
     await expect(
       callResolver(contractCache, providerSource, {}, { name: 'ContractName', fn: 'callMe', params: ['foo'] }, {}, {})
-    ).rejects.toEqual('{"name":"ContractName"} callMe(["foo"]): error!')
+    ).rejects.toEqual('{"contract":"ContractName"} callMe(["foo"]): error!')
   })
 })

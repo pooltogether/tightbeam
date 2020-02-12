@@ -23,7 +23,8 @@ export async function pastEventsResolver(
   const contract = await contractCache.resolveContract({
     abi: eventFilter.abi,
     address: eventFilter.address,
-    name: eventFilter.name
+    name: eventFilter.name,
+    contract: eventFilter.contract
   })
 
   const filter = buildFilter(

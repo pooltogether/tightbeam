@@ -18,6 +18,8 @@ export {
   utils
 }
 
+export { AbiMapping } from './abis'
+
 import { ContractCache } from './ContractCache'
 import { AbiMapping } from './abis/AbiMapping'
 import { ProviderSource } from './types/ProviderSource'
