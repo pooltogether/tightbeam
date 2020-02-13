@@ -13,24 +13,25 @@ interface ContractType {
 export async function contractResolver(contractCache: ContractCache, opts, args, context, info): Promise<ContractType> {
   let {
     name,
+    contract,
     address,
     abi
   } = args
 
-  const contract = await contractCache.resolveContract({ name, address, abi })
+  const ethersContract = await contractCache.resolveContract({ name, address, abi, contract })
 
-  if (!contract) {
+  if (!ethersContract) {
     const error = `tightbeam: contractResolver(): unknown contract ${JSON.stringify({ name, address, abi })}`
     debug(error)
     throw new Error(error)
   }
 
-  const { chainId } = await contract.provider.getNetwork()
+  const { chainId } = await ethersContract.provider.getNetwork()
 
   return {
     __typename: 'Contract',
-    id: `${chainId}@${contract.address}`,
-    address: contract.address,
+    id: `${chainId}@${ethersContract.address}`,
+    address: ethersContract.address,
     chainId,
     name
   }

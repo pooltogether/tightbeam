@@ -127,7 +127,7 @@ export class ContractCache {
     let result
     if (address) {
       result = await this.getContractByAddress(address, abi)
-    } else if (name) {
+    } else if (contractName) {
       result = await this.getContractByName(contractName)
     } else if (abi) {
       error(`abi '${abi}' selected but no address passed`)
