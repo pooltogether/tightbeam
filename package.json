@@ -9,7 +9,7 @@
   "author": "Brendan Asselstine <brendan@pooltogether.us>",
   "license": "MIT",
   "scripts": {
-    "test": "jest",
+    "test": "jest -w 1",
     "dist": "rollup -c rollup.config.js",
     "dist-clean": "rm -rf _virtual abis queries resolvers services subscribers types utils ContractCache.js index.js Tightbeam.js multicall",
     "watch": "rollup -w -c rollup.config.js",
@@ -31,10 +31,10 @@
   },
   "peerDependencies": {
     "apollo-client": "^2.6.8",
+    "apollo-link-state": "^0.4.2",
     "ethers": "^4.0.39",
     "graphql-anywhere": "^4.2.6",
-    "graphql-tag": "^2.10.1",
-    "apollo-link-state": "^0.4.2"
+    "graphql-tag": "^2.10.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
@@ -47,6 +47,7 @@
     "graphql-anywhere": "^4.2.6",
     "graphql-tag": "^2.10.1",
     "jest": "^24.9.0",
+    "jest-leak-detector": "^25.1.0",
     "node-fetch": "^2.6.0",
     "promise.allsettled": "^1.0.2",
     "rollup": "^1.27.4",
@@ -54,6 +55,7 @@
     "ts-jest": "^24.2.0",
     "tslib": "^1.10.0",
     "typedoc": "^0.15.3",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.2",
+    "weak": "^1.0.1"
   }
 }

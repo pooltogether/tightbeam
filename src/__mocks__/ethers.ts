@@ -6,7 +6,8 @@ export const ethers = {
     bigNumberify: ethersOriginal.utils.bigNumberify,
     defaultAbiCoder: ethersOriginal.utils.defaultAbiCoder,
     getAddress: ethersOriginal.utils.getAddress,
-    hexlify: ethersOriginal.utils.hexlify
+    hexlify: ethersOriginal.utils.hexlify,
+    getDefaultProvider: () => jest.fn()
   },
   Contract: jest.fn()
 }
