@@ -18,6 +18,9 @@ export async function accountResolver (providerSource: ProviderSource): Promise<
     if(/JsonRpcProvider/.test(e.toString())) {
       return null
     }
+    if (/unknown account #0/.test(e.toString())) {
+      return null
+    }
     throw e
   }  
 }

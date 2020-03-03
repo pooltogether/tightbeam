@@ -19,4 +19,9 @@ describe('accountResolver', () => {
   it('should work', async () => {
     expect(await accountResolver(providerSource)).toEqual('0x1234')
   })
+
+  it('should handle signers that are missing accounts', async () => {
+    signer.getAddress = () => { throw 'unknown account #0' }
+    expect(await accountResolver(providerSource)).toEqual(null)
+  })
 })
