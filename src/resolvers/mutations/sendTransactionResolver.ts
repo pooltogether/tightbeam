@@ -62,7 +62,7 @@ export async function sendTransactionResolver(contractCache: ContractCache, prov
     scaleGasEstimate: scaleGasEstimate ? scaleGasEstimate.toString() : null,
     minimumGas: minimumGas ? minimumGas.toString() : null,
     value: value ? value.toString() : null,
-    params: new TransactionParams(Array.from(params).map(param => param.toString())),
+    params: new TransactionParams(Array.from(params).map(param => param ? param.toString() : '')),
   }
 
   const query = cachedTransactionsQuery
