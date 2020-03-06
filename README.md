@@ -13,6 +13,10 @@ Features:
 
 Apollo Client is a powerful framework that allows web applications to communicate with GraphQL servers. By leveraging it's powerful caching and the Multicall smart contract it's possible to build extremely fast Ethereum dApps.
 
+## Tutorial
+
+For a complete walkthrough of building a dapp and adding a subgraph to it checkout the [ETHDenver workshop](https://github.com/pooltogether/ethdenver-graphql-workshop).  It will guide you through dapp creation and integrating a subgraph.
+
 # Installation
 
 Tightbeam is published under the scoped package `@pooltogether/tightbeam`.
