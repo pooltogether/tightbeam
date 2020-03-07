@@ -9,6 +9,8 @@ const debug = require('debug')('tightbeam:web3Resolvers')
 export async function accountResolver (providerSource: ProviderSource): Promise<string> {
   try {
     const provider = castToJsonRpcProvider(await providerSource())
+    const accounts = await provider.listAccounts()
+    if (!accounts.length) { return null }
     const signer = provider.getSigner()
     debug('signer: ', signer)
     const address = await signer.getAddress()
