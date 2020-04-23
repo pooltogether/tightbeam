@@ -59,7 +59,14 @@ export class MulticallBatch {
   async execute() {
     const data = encodeCalls(this.calls)
     debug('execute', { batchId: this.id })
-    const returnData = await this.executor.execute(data)
+    
+    let returnData = null
+
+    try {
+      returnData = await this.executor.execute(data)
+    } catch (e) {
+      console.warn(`executor.execute() failed`, e)
+    }
 
     if (returnData) {
       const [blockNumber, returnValues] = decodeCalls(returnData)
@@ -67,8 +74,6 @@ export class MulticallBatch {
       for (let i = 0; i < returnValues.length; i++) {
         this.calls[i].resolve(returnValues[i])
       }
-    } else {
-      debug('returnData was returned null, possibly interrupted by refresh or page change')
     }
   }
 }

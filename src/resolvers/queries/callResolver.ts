@@ -55,7 +55,7 @@ export async function callResolver(contractCache: ContractCache, providerSource:
       return returns
     } catch (error) {
       const msg = `${identifier} ${fn}(${JSON.stringify(params)}): ${error.message || error}`
-      console.error(msg, error)
+      console.warn(msg, error)
       throw msg
     }
   }
