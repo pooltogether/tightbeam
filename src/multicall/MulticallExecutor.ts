@@ -23,9 +23,12 @@ export class MulticallExecutor {
     }
     const provider = await this.providerSource()
 
-    const result = await provider.call(tx)
-
-    return result
+    try {
+      const result = await provider.call(tx)
+      return result
+    } catch (e) {
+      return null
+    }
   }
 
   async multicallAddressOrThrow() {

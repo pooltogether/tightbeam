@@ -60,10 +60,15 @@ export class MulticallBatch {
     const data = encodeCalls(this.calls)
     debug('execute', { batchId: this.id })
     const returnData = await this.executor.execute(data)
-    const [blockNumber, returnValues] = decodeCalls(returnData)
 
-    for (let i = 0; i < returnValues.length; i++) {
-      this.calls[i].resolve(returnValues[i])
+    if (returnData) {
+      const [blockNumber, returnValues] = decodeCalls(returnData)
+
+      for (let i = 0; i < returnValues.length; i++) {
+        this.calls[i].resolve(returnValues[i])
+      }
+    } else {
+      debug('returnData was returned null, possibly interrupted by refresh or page change')
     }
   }
 }
